@@ -100,7 +100,10 @@
         <label>Цена, ₽<input id="priceRub" inputmode="numeric"></label>
         <label>Цена, $<input id="priceUsd" inputmode="numeric"></label>
       </div>
-      <label>Подпись волны<input id="wave"></label>
+      <label>Подпись волны (можно в несколько строк)<textarea id="wave" rows="3"></textarea></label>
+      <label>Текст ссылки под кнопкой<input id="bookText" placeholder="Например, Забронировать место со скидкой"></label>
+      <label>Куда ведёт ссылка<input id="bookUrl" placeholder="https://t.me/..." inputmode="url" autocomplete="off" spellcheck="false"></label>
+      <p class="muted" style="font-size:13px">Если стереть текст ссылки, она пропадёт с сайта.</p>
     </section>
 
     <section class="card">
@@ -218,7 +221,7 @@ function fill() {
   S.images = S.images || {};
   const f = S.family;
   $("#open").checked = !!f.open; $("#seats").value = f.seats ?? 0; $("#total").value = f.total ?? 0;
-  $("#priceRub").value = f.priceRub ?? ""; $("#priceUsd").value = f.priceUsd ?? ""; $("#wave").value = f.wave ?? "";
+  $("#priceRub").value = f.priceRub ?? ""; $("#priceUsd").value = f.priceUsd ?? ""; $("#wave").value = f.wave ?? ""; $("#bookText").value = f.bookText ?? "Забронировать место со скидкой"; $("#bookUrl").value = f.bookUrl ?? "https://t.me/m/bxwMqnFtMWJh";
   hint(); EDIT = -1; drawReviews(); drawPics();
 }
 function hint() { $("#open-hint").textContent = $("#open").checked ? "Сейчас на сайте «Вход открыт» и счётчик мест" : "Сейчас на сайте замок и «Вход пока закрыт»"; }
@@ -318,7 +321,8 @@ $("#nr-add").addEventListener("click", async () => {
 $("#save").addEventListener("click", async () => {
   const btn = $("#save"), f = S.family;
   f.open = $("#open").checked; f.seats = Math.max(0, parseInt($("#seats").value, 10) || 0); f.total = Math.max(0, parseInt($("#total").value, 10) || 0);
-  f.priceRub = $("#priceRub").value.trim(); f.priceUsd = $("#priceUsd").value.trim(); f.wave = $("#wave").value.trim();
+  f.priceRub = $("#priceRub").value.trim(); f.priceUsd = $("#priceUsd").value.trim(); f.wave = $("#wave").value.trim(); f.bookText = $("#bookText").value.trim(); f.bookUrl = $("#bookUrl").value.trim();
+  if (f.bookText && !/^https:\/\/\S+$/.test(f.bookUrl)) { say("#st-connect", "Ссылка под кнопкой должна начинаться с https://", "err"); scrollTo({ top: 0, behavior: "smooth" }); return; }
   btn.disabled = true; btn.textContent = "Сохраняю…";
   try {
     for (const p of [...pending]) {

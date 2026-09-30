@@ -23,11 +23,13 @@ const okImg = v => /^https:\/\/[\w-]+\.(public\.|private\.)?blob\.vercel-storage
 function clean(s) {
   const f = s && typeof s.family === "object" && s.family ? s.family : {};
   const num = v => Math.max(0, Math.min(100000, parseInt(v, 10) || 0));
-  const family = { open: !!f.open, seats: num(f.seats), total: num(f.total), priceRub: str(f.priceRub, 20), priceUsd: str(f.priceUsd, 20), wave: str(f.wave, 60) };
+  const family = { open: !!f.open, seats: num(f.seats), total: num(f.total), priceRub: str(f.priceRub, 20), priceUsd: str(f.priceUsd, 20), wave: str(f.wave, 5000),
+    bookText: f.bookText === undefined ? "Забронировать место со скидкой" : str(f.bookText, 200),
+    bookUrl: f.bookUrl === undefined ? "https://t.me/m/bxwMqnFtMWJh" : (/^https:\/\/[^\s"<>]+$/.test(str(f.bookUrl, 500)) ? str(f.bookUrl, 500) : "") };
   const reviews = (Array.isArray(s && s.reviews) ? s.reviews : []).slice(0, 300).map(r => {
     const o = {};
     const name = str(r && r.name, 60); if (name) o.name = name;
-    o.text = str(r && r.text, 3000);
+    o.text = str(r && r.text, 20000);
     const date = str(r && r.date, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(date)) o.date = date;
     const link = str(r && r.link, 300); if (/^https:\/\/t\.me\/[\w/+-]+$/.test(link)) o.link = link;
     const img = str(r && r.img, 400); if (img && okImg(img)) o.img = img;

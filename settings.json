@@ -5,7 +5,9 @@
     "total": 50,
     "priceRub": "2 777",
     "priceUsd": "33",
-    "wave": "Вторая волна"
+    "wave": "Вторая волна",
+    "bookText": "Забронировать место со скидкой",
+    "bookUrl": "https://t.me/m/bxwMqnFtMWJh"
   },
   "reviews": [
     {
