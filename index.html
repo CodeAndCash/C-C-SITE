@@ -423,6 +423,19 @@ html.theme-anim, html.theme-anim *, html.theme-anim *::before, html.theme-anim *
 .pdemo__phone { width: 100%; max-width: 520px; justify-self: center; height: min(640px, 78svh); min-height: 520px; border-radius: 22px; overflow: hidden; border: 1px solid var(--line-light); background: #151619; box-shadow: 0 40px 70px -40px rgb(0 0 0 / 0.55); }
 .pdemo__phone iframe { display: block; width: 100%; height: 100%; border: 0; background: #151619; }
 html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone iframe { background: #f3f3f4; }
+.pre { position: fixed; inset: 0; z-index: 200; display: grid; place-items: center; background: rgb(21 22 25 / 0.72); -webkit-backdrop-filter: blur(18px) saturate(1.2); backdrop-filter: blur(18px) saturate(1.2); pointer-events: none; transition: opacity 600ms var(--ease), visibility 0s 600ms; }
+.pre.is-done { opacity: 0; visibility: hidden; }
+.pre__in { display: grid; justify-items: center; gap: 18px; transition: transform 600ms var(--ease); }
+.pre.is-done .pre__in { transform: scale(1.08); }
+.pre__bird { position: relative; width: 96px; height: 96px; }
+.pre__bird i { position: absolute; inset: 0; -webkit-mask: url(assets/bird.png) center / contain no-repeat; mask: url(assets/bird.png) center / contain no-repeat; }
+.pre__base { background: rgb(242 242 239 / 0.16); }
+.pre__fill { background: #f2f2ef; clip-path: inset(100% 0 0 0); }
+.pre__num { font-family: var(--f-mono); font-weight: 400; font-size: 14px; letter-spacing: 0.08em; color: #cfcfcb; font-variant-numeric: tabular-nums; min-width: 4ch; text-align: center; }
+html[data-mode="light"] .pre { background: rgb(250 250 248 / 0.72); }
+html[data-mode="light"] .pre__base { background: rgb(20 21 24 / 0.12); }
+html[data-mode="light"] .pre__fill { background: #141518; }
+html[data-mode="light"] .pre__num { color: #5e5f65; }
 
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.185.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.185.0/examples/jsm/"}}</script>
@@ -430,6 +443,39 @@ html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone ifr
 </head>
 <body>
 
+<div class="pre" id="pre" aria-hidden="true">
+  <div class="pre__in">
+    <div class="pre__bird"><i class="pre__base"></i><i class="pre__fill" id="pre-fill"></i></div>
+    <b class="pre__num" id="pre-num">0%</b>
+  </div>
+</div>
+<script>
+(function () {
+  var box = document.getElementById("pre"), fill = document.getElementById("pre-fill"), num = document.getElementById("pre-num");
+  if (!box) return;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var t0 = performance.now(), MIN = calm ? 400 : 1300, MAX = 4000, p = 0, loaded = document.readyState === "complete";
+  addEventListener("load", function () { loaded = true; });
+  function draw() {
+    fill.style.clipPath = "inset(" + (100 - p).toFixed(2) + "% 0 0 0)";
+    num.textContent = Math.floor(p) + "%";
+  }
+  function step(now) {
+    var t = now - t0;
+    var goal = loaded || t > MAX ? 100 : Math.min(92, t / MAX * 110);
+    goal = Math.min(goal, t / MIN * 100);
+    p += (goal - p) * 0.14;
+    if (goal >= 100 && p > 99.5) p = 100;
+    draw();
+    if (p < 100) return requestAnimationFrame(step);
+    setTimeout(function () {
+      box.classList.add("is-done");
+      setTimeout(function () { box.remove(); }, 700);
+    }, 180);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
 <a class="vh" href="#main">Перейти к содержимому</a>
 
 <header class="top" data-top>
@@ -507,10 +553,10 @@ html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone ifr
       <div class="phone-wrap"><div aria-hidden="true" style="display:contents">
         <div class="phone" data-phone>
           <div class="phone__screen">
-            <div class="phone__bar"><img class="phone__ava" src="assets/marathon-ava.webp" alt="" width="34" height="34"><div><p class="phone__name">Code&amp;Cash</p><p class="phone__status">бот · марафон</p></div></div>
+            <div class="phone__bar"><img class="phone__ava" data-img="marathon" src="assets/marathon-ava.webp" alt="" width="34" height="34"><div><p class="phone__name">Code&amp;Cash</p><p class="phone__status">бот · марафон</p></div></div>
             <div class="chat" data-chat>
               <p class="msg msg--me">/start</p>
-              <figure class="msg msg--img"><img src="assets/marathon.webp" alt="Бесплатный марафон C&amp;C" width="720" height="720" loading="lazy" decoding="async"><figcaption>Бесплатный марафон C&amp;C. Поехали по шагам 👇</figcaption></figure>
+              <figure class="msg msg--img"><img data-img="marathon" src="assets/marathon.webp" alt="Бесплатный марафон C&amp;C" width="720" height="720" loading="lazy" decoding="async"><figcaption>Бесплатный марафон C&amp;C. Поехали по шагам 👇</figcaption></figure>
               <p class="msg"><b>Шаг 1.</b> Ищем нишу, где сайт или бот реально нужен.</p>
               <p class="msg"><b>Шаг 2.</b> Держи готовый промт, пробуем собрать первую работу.</p>
               <p class="msg"><b>Шаг 3.</b> Что написать первому клиенту.</p>
@@ -533,7 +579,7 @@ html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone ifr
         <div class="pass-wrap rv" data-rv="card">
           <div class="pass" data-pass>
             <div class="pass__top">
-              <div class="pass__id"><img class="pass__ava" src="assets/family.webp" alt="" width="52" height="52"><div class="pass__brand"><b>C&amp;C Family</b><span class="pass__wave" data-wave>Вторая волна</span></div></div>
+              <div class="pass__id"><img class="pass__ava" data-img="family" src="assets/family.webp" alt="" width="52" height="52"><div class="pass__brand"><b>C&amp;C Family</b><span class="pass__wave" data-wave>Вторая волна</span></div></div>
               <div class="padlock" aria-hidden="true">
                 <svg viewBox="0 0 64 64"><path class="shackle" d="M20 30V21a12 12 0 0 1 24 0v9" fill="none" stroke="#f2f2ef" stroke-width="4" stroke-linecap="round"/><rect x="12" y="29" width="40" height="29" rx="9" fill="#f2f2ef"/><circle cx="32" cy="42" r="3.6" fill="#1b1c20"/><path d="M32 45v5" stroke="#1b1c20" stroke-width="3" stroke-linecap="round"/></svg>
               </div>
@@ -563,7 +609,7 @@ html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone ifr
   <section class="sec s-light" id="parser" aria-labelledby="par-title">
     <div class="wrap parser">
       <div class="parser__copy">
-        <img class="parser__logo rv" src="assets/parser.webp" alt="Логотип Parser C&amp;C" width="120" height="120" loading="lazy" decoding="async">
+        <img class="parser__logo rv" data-img="parser" src="assets/parser.webp" alt="Логотип Parser C&amp;C" width="120" height="120" loading="lazy" decoding="async">
         <h2 id="par-title" data-words>Parser C&amp;C</h2>
         <p class="lead rv">Будет в команде. Каждый день помогает находить клиентов с любого гео и на любую тему. На поиск почти не уходит сил, остаётся писать и договариваться.</p>
         <div class="big-num rv"><b data-count="300">0</b><span>офферов за неделю можно отписывать, почти не тратя сил на поиск</span></div>
@@ -572,6 +618,7 @@ html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone ifr
         <div class="pdemo rv" data-rv="card">
           <div class="pdemo__phone"><iframe title="Демо Parser C&amp;C" data-pdemo loading="lazy"></iframe></div>
         </div>
+        <p class="demo-note">Это тестовая версия парсера, бизнесы в ней не настоящие. В самом парсере всё работает по-настоящему</p>
       </div>
     </div>
   </section>
@@ -580,7 +627,7 @@ html[data-mode="light"] .pdemo__phone, html[data-mode="light"] .pdemo__phone ifr
     <div class="wrap author">
       <div class="author__wrap rv" data-rv="card">
       <div class="author__card" data-author>
-        <div class="author__photo" data-photo><img src="assets/alexander.webp" alt="Александр, автор Code&amp;Cash" width="900" height="900" loading="lazy" decoding="async"></div>
+        <div class="author__photo" data-photo><img data-img="author" src="assets/alexander.webp" alt="Александр, автор Code&amp;Cash" width="900" height="900" loading="lazy" decoding="async"></div>
         <span class="author__badge" data-badge>19</span>
         <div class="author__meta"><span>Александр · Sunrise</span><span>@SUN9ISE</span></div>
       </div>
@@ -898,6 +945,14 @@ async function loadSettings() {
   }
   return DEFAULTS;
 }
+const SITE_IMG = /^(https:\/\/[\w-]+\.(public\.)?blob\.vercel-storage\.com\/|\/api\/img\?p=|assets\/)/;
+function applyImages(m = {}) {
+  $$("[data-img]").forEach(el => {
+    if (!el.dataset.orig) el.dataset.orig = el.getAttribute("src");
+    const v = m[el.dataset.img];
+    el.src = v && SITE_IMG.test(v) ? v : el.dataset.orig;
+  });
+}
 function applyFamily(f = {}) {
   const sec = $("[data-family]"), open = !!f.open;
   sec.classList.toggle("is-open", open);
@@ -1042,7 +1097,7 @@ async function loadChannel() {
   let late = false;
   const ch = loadChannel().then(c => { if (c && c.length) { CHANNEL = c; if (late) renderReviews(mergeReviews()); } });
   SETTINGS = await loadSettings();
-  applyFamily(SETTINGS.family || DEFAULTS.family);
+  applyFamily(SETTINGS.family || DEFAULTS.family); applyImages(SETTINGS.images);
   await Promise.race([ch, new Promise(r => setTimeout(r, 2500))]);
   late = true;
   renderReviews(mergeReviews());
@@ -1075,7 +1130,7 @@ async function loadChannel() {
   addEventListener("message", e => {
     if (e.origin !== location.origin || !e.data) return;
     if (e.data.type === "cc-close") close();
-    if (e.data.type === "cc-saved" && e.data.settings) { SETTINGS = e.data.settings; applyFamily(SETTINGS.family); renderReviews(mergeReviews()); }
+    if (e.data.type === "cc-saved" && e.data.settings) { SETTINGS = e.data.settings; applyFamily(SETTINGS.family); applyImages(SETTINGS.images); renderReviews(mergeReviews()); }
   });
 })();
 

@@ -55,6 +55,16 @@
   details summary { cursor: pointer; color: var(--mid); font-size: 14px; }
   details ol { color: var(--mid); font-size: 14px; padding-left: 20px; margin: 8px 0 0; display: grid; gap: 6px; }
   code { font-family: "JetBrains Mono", monospace; font-size: 13px; background: var(--dark-3); padding: 2px 6px; border-radius: 6px; }
+  .rved { grid-column: 1 / -1; display: grid; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .rved .row2 { display: flex; gap: 8px; flex-wrap: wrap; }
+  .rved .btn { min-height: 42px; font-size: 14px; }
+  .pic { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: var(--dark); border: 1px solid var(--line); }
+  .pic img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; background: var(--dark-3); }
+  .pic b { display: block; font-weight: 600; }
+  .pic .row2 { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .filebtn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 0.2); font-size: 14px; color: var(--on); cursor: pointer; }
+  .filebtn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; min-height: 0; }
+  .linkbtn { min-height: 40px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--mid); font: inherit; font-size: 14px; cursor: pointer; }
   [hidden] { display: none !important; }
   a { color: inherit; }
 </style>
@@ -94,9 +104,17 @@
     </section>
 
     <section class="card">
+      <h2>Картинки на сайте</h2>
+      <p class="muted">Нажмите «Заменить», выберите фото и сохраните. «Вернуть» ставит исходную картинку.</p>
+      <div class="list" id="pics"></div>
+      <p class="status" id="st-pics"></p>
+    </section>
+
+    <section class="card">
       <h2>Отзывы</h2>
-      <p class="muted">Порядок здесь — порядок на сайте. Стрелками можно двигать, крестиком — убрать.</p>
+      <p class="muted">Карандаш открывает отзыв: можно поправить имя, текст, дату и заменить или убрать скриншот. Стрелками двигать, крестиком удалить.</p>
       <div class="list" id="reviews"></div>
+      <p class="status" id="st-rv"></p>
     </section>
 
     <section class="card">
@@ -197,10 +215,11 @@ $("#tg").addEventListener("change", e => {
 });
 
 function fill() {
+  S.images = S.images || {};
   const f = S.family;
   $("#open").checked = !!f.open; $("#seats").value = f.seats ?? 0; $("#total").value = f.total ?? 0;
   $("#priceRub").value = f.priceRub ?? ""; $("#priceUsd").value = f.priceUsd ?? ""; $("#wave").value = f.wave ?? "";
-  hint(); drawReviews();
+  hint(); EDIT = -1; drawReviews(); drawPics();
 }
 function hint() { $("#open-hint").textContent = $("#open").checked ? "Сейчас на сайте «Вход открыт» и счётчик мест" : "Сейчас на сайте замок и «Вход пока закрыт»"; }
 $("#open").addEventListener("change", hint);
@@ -208,19 +227,64 @@ document.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click"
 
 const esc = s => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
 function imgSrc(r) { const p = pending.find(x => x.key === r.img); return p ? p.preview : r.img || ""; }
+let EDIT = -1;
 function drawReviews() {
   const list = S.reviews;
   $("#reviews").innerHTML = list.length ? list.map((r, i) => `
     <div class="rv">
       <div style="display:grid;gap:10px;grid-template-columns:${r.img ? "56px minmax(0,1fr)" : "minmax(0,1fr)"};align-items:start;min-width:0">${r.img ? `<img src="${esc(imgSrc(r))}" alt="">` : ""}<div style="min-width:0"><p><b>${esc(r.name || "")}</b>${r.name ? ": " : ""}${esc(r.text) || "<i>только скриншот</i>"}</p><small>${esc(r.date || "")}</small></div></div>
-      <div class="rv__tools"><button type="button" data-mv="${i}" data-d="-1" aria-label="Выше">↑</button><button type="button" data-mv="${i}" data-d="1" aria-label="Ниже">↓</button><button type="button" data-rm="${i}" aria-label="Удалить">✕</button></div>
+      <div class="rv__tools"><button type="button" data-ed="${i}" aria-label="Изменить">✎</button><button type="button" data-mv="${i}" data-d="-1" aria-label="Выше">↑</button><button type="button" data-mv="${i}" data-d="1" aria-label="Ниже">↓</button><button type="button" data-rm="${i}" aria-label="Удалить">✕</button></div>
+      ${EDIT === i ? `<div class="rved">
+        <label>Имя<input data-f="name" value="${esc(r.name || "")}"></label>
+        <label>Текст<textarea data-f="text">${esc(r.text || "")}</textarea></label>
+        <div class="row"><label>Дата<input data-f="date" type="date" value="${esc(r.date || "")}"></label><label>Ссылка на пост<input data-f="link" value="${esc(r.link || "")}"></label></div>
+        <div class="row2"><span class="filebtn">${r.img ? "Заменить скриншот" : "Добавить скриншот"}<input type="file" accept="image/*" data-rimg="${i}"></span>${r.img ? `<button type="button" class="linkbtn" data-rnoimg="${i}">Убрать скриншот</button>` : ""}</div>
+        <button type="button" class="btn btn--ghost" data-eddone>Готово</button>
+      </div>` : ""}
     </div>`).join("") : `<p class="muted">Отзывов пока нет.</p>`;
 }
-$("#reviews").addEventListener("click", e => {
-  const mv = e.target.closest("[data-mv]"), rm = e.target.closest("[data-rm]"), L = S.reviews;
-  if (mv) { const i = +mv.dataset.mv, j = i + +mv.dataset.d; if (j >= 0 && j < L.length) { [L[i], L[j]] = [L[j], L[i]]; drawReviews(); } }
-  if (rm) { const i = +rm.dataset.rm; const r = L.splice(i, 1)[0]; pending = pending.filter(p => p.key !== r.img); (r.tg || []).forEach(id => { if (!S.hideTg.includes(id)) S.hideTg.push(id); }); drawReviews(); drawTg(); }
+$("#reviews").addEventListener("input", e => {
+  const f = e.target.dataset.f; if (!f || EDIT < 0) return;
+  const r = S.reviews[EDIT], v = e.target.value.trim();
+  if (v) r[f] = v; else if (f === "text") r.text = ""; else delete r[f];
 });
+$("#reviews").addEventListener("change", async e => {
+  const inp = e.target.closest("[data-rimg]"); if (!inp || !inp.files[0]) return;
+  const r = S.reviews[+inp.dataset.rimg];
+  try { const key = await addPending(inp.files[0]); pending = pending.filter(p => p.key !== r.img); r.img = key; drawReviews(); say("#st-rv", "Скриншот заменён. Не забудьте сохранить.", "ok"); }
+  catch (err) { say("#st-rv", err.message, "err"); }
+});
+$("#reviews").addEventListener("click", e => {
+  const ed = e.target.closest("[data-ed]"), done = e.target.closest("[data-eddone]"), noimg = e.target.closest("[data-rnoimg]");
+  const mv = e.target.closest("[data-mv]"), rm = e.target.closest("[data-rm]"), L = S.reviews;
+  if (ed) { const i = +ed.dataset.ed; EDIT = EDIT === i ? -1 : i; drawReviews(); return; }
+  if (done) { EDIT = -1; drawReviews(); return; }
+  if (noimg) { const r = L[+noimg.dataset.rnoimg]; if (!r.text) { say("#st-rv", "Сначала напишите текст отзыва, иначе он будет пустым.", "err"); return; } pending = pending.filter(p => p.key !== r.img); delete r.img; drawReviews(); return; }
+  if (mv) { const i = +mv.dataset.mv, j = i + +mv.dataset.d; if (j >= 0 && j < L.length) { [L[i], L[j]] = [L[j], L[i]]; EDIT = EDIT === i ? j : EDIT === j ? i : EDIT; drawReviews(); } }
+  if (rm) { const i = +rm.dataset.rm; const r = L.splice(i, 1)[0]; EDIT = -1; pending = pending.filter(p => p.key !== r.img); (r.tg || []).forEach(id => { if (!S.hideTg.includes(id)) S.hideTg.push(id); }); drawReviews(); drawTg(); }
+});
+
+const PICS = [["author", "Фото Александра", "assets/alexander.webp"], ["family", "Аватарка C&C Family", "assets/family.webp"], ["marathon", "Фото марафона", "assets/marathon.webp"], ["parser", "Логотип парсера", "assets/parser.webp"]];
+function picSrc(k, def) { const v = S.images[k]; if (!v) return def; const p = pending.find(x => x.key === v); return p ? p.preview : v; }
+function drawPics() {
+  $("#pics").innerHTML = PICS.map(([k, n, def]) => `<div class="pic"><img src="${esc(picSrc(k, def))}" alt=""><div style="min-width:0"><b>${n}</b><span class="muted">${S.images[k] ? "Своя картинка" : "Исходная"}</span>
+    <div class="row2"><span class="filebtn">Заменить<input type="file" accept="image/*" data-pic="${k}"></span>${S.images[k] ? `<button type="button" class="linkbtn" data-picreset="${k}">Вернуть</button>` : ""}</div></div></div>`).join("");
+}
+$("#pics").addEventListener("change", async e => {
+  const inp = e.target.closest("[data-pic]"); if (!inp || !inp.files[0]) return;
+  try { const k = inp.dataset.pic, key = await addPending(inp.files[0]); pending = pending.filter(p => p.key !== S.images[k]); S.images[k] = key; drawPics(); say("#st-pics", "Картинка выбрана. Не забудьте сохранить.", "ok"); }
+  catch (err) { say("#st-pics", err.message, "err"); }
+});
+$("#pics").addEventListener("click", e => {
+  const b = e.target.closest("[data-picreset]"); if (!b) return;
+  const k = b.dataset.picreset; pending = pending.filter(p => p.key !== S.images[k]); delete S.images[k]; drawPics();
+});
+async function addPending(file) {
+  const preview = await shrink(file);
+  const key = "new-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7);
+  pending.push({ key, preview, b64: preview.split(",")[1] });
+  return key;
+}
 
 function shrink(file) {
   return new Promise((ok, no) => {
@@ -243,9 +307,7 @@ $("#nr-add").addEventListener("click", async () => {
   const link = $("#nr-link").value.trim(); if (link) r.link = link;
   try {
     if (file) {
-      const preview = await shrink(file);
-      r.img = "new-" + Date.now();
-      pending.push({ key: r.img, preview, b64: preview.split(",")[1] });
+      r.img = await addPending(file);
     }
     S.reviews.unshift(r); drawReviews();
     $("#nr-text").value = ""; $("#nr-img").value = ""; $("#nr-link").value = ""; $("#nr-name").value = "";
@@ -262,10 +324,11 @@ $("#save").addEventListener("click", async () => {
     for (const p of [...pending]) {
       const { url } = await api("upload", { data: p.b64 });
       S.reviews.forEach(r => { if (r.img === p.key) r.img = url; });
+      Object.keys(S.images || {}).forEach(k => { if (S.images[k] === p.key) S.images[k] = url; });
       pending = pending.filter(x => x !== p);
     }
     const d = await api("save", { settings: S });
-    S = d.settings; S.hideTg = S.hideTg || []; fill(); drawTg();
+    S = d.settings; S.hideTg = S.hideTg || []; S.images = S.images || {}; fill(); drawTg();
     if (EMBED) parent.postMessage({ type: "cc-saved", settings: JSON.parse(JSON.stringify(S)) }, location.origin);
     btn.textContent = "Сохранено ✓";
     say("#st-connect", "Сохранено, на сайте уже видно.", "ok");
