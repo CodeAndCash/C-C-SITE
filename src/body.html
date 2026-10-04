@@ -1,0 +1,312 @@
+
+<div class="pre" id="pre" aria-hidden="true">
+  <div class="pre__in">
+    <div class="pre__bird"><i class="pre__base"></i><i class="pre__fill" id="pre-fill"></i></div>
+    <b class="pre__num" id="pre-num">0%</b>
+  </div>
+</div>
+<script>
+(function () {
+  var box = document.getElementById("pre"), fill = document.getElementById("pre-fill"), num = document.getElementById("pre-num");
+  if (!box) return;
+  var calm = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var t0 = performance.now(), MIN = calm ? 400 : 1300, MAX = 4000, p = 0, loaded = document.readyState === "complete";
+  addEventListener("load", function () { loaded = true; });
+  function draw() {
+    fill.style.clipPath = "inset(" + (100 - p).toFixed(2) + "% 0 0 0)";
+    num.textContent = Math.floor(p) + "%";
+  }
+  function step(now) {
+    var t = now - t0;
+    var goal = loaded || t > MAX ? 100 : Math.min(92, t / MAX * 110);
+    goal = Math.min(goal, t / MIN * 100);
+    p += (goal - p) * 0.14;
+    if (goal >= 100 && p > 99.5) p = 100;
+    draw();
+    if (p < 100) return requestAnimationFrame(step);
+    setTimeout(function () {
+      box.classList.add("is-done");
+      setTimeout(function () { box.remove(); }, 700);
+    }, 180);
+  }
+  requestAnimationFrame(step);
+})();
+</script>
+<a class="vh" href="#main">Перейти к содержимому</a>
+
+<header class="top" data-top>
+  <div class="wrap top__in">
+    <a class="logo" href="#top" aria-label="Code&amp;Cash, наверх" data-logo><img class="logo__mark" src="assets/bird.png" alt="" width="30" height="30">Code&amp;Cash</a>
+    <nav class="nav" aria-label="Разделы">
+      <a href="#marathon">Марафон</a>
+      <a href="#family">C&amp;C Family</a>
+      <a href="#parser">Парсер</a>
+      <a href="#scripts">Скрипты</a>
+      <a href="#author">Обо мне</a>
+      <a href="#reviews">Отзывы</a>
+    </nav>
+    <div class="top__right">
+      <div class="theme" role="group" aria-label="Тема сайта"><button type="button" data-theme-set="light" aria-pressed="false">Светлая</button><button type="button" data-theme-set="dark" aria-pressed="false">Тёмная</button></div>
+      <button class="install" type="button" data-install aria-label="Установить приложение Code&amp;Cash">Приложение</button>
+      <button class="burger" type="button" data-burger aria-label="Меню" aria-expanded="false"><span></span><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="menu" data-menu>
+  <nav aria-label="Меню">
+    <a href="#marathon">Бесплатный марафон</a>
+    <a href="#family">C&amp;C Family</a>
+    <a href="#parser">Парсер</a>
+    <a href="#scripts">Скрипты</a>
+    <a href="#author">Обо мне</a>
+    <a href="#reviews">Отзывы</a>
+    <a href="#faq">Вопросы</a>
+  </nav>
+  <div class="btns">
+    <a class="btn btn--white" href="https://t.me/CodeAndCash_bot" target="_blank" rel="noopener">Начать марафон</a>
+    <a class="btn btn--ghost-d" href="https://t.me/SUN9ISE" target="_blank" rel="noopener">Написать Александру</a>
+  </div>
+  <div class="theme" role="group" aria-label="Тема сайта"><button type="button" data-theme-set="light" aria-pressed="false">Светлая</button><button type="button" data-theme-set="dark" aria-pressed="false">Тёмная</button></div>
+</div>
+
+<main id="main">
+  <section class="hero s-dark" id="top" data-hero aria-labelledby="hero-title">
+    <div class="hero__stage">
+      <canvas class="hero__canvas" data-coin aria-hidden="true"></canvas>
+      <div class="hero__fallback" aria-hidden="true">C&amp;C</div>
+      <p class="hero__hint" data-hint aria-hidden="true">Покрутите монету</p>
+    </div>
+    <div class="wrap">
+      <div class="hero__copy">
+        <p class="hero__kicker" data-hin>Code&amp;Cash · Александр, @SUN9ISE</p>
+        <h1 id="hero-title" data-lines><span class="ln"><span>Первые деньги</span></span><span class="ln"><span>на AI. <em>С командой,</em></span></span><span class="ln"><span><em>а не в одиночку</em></span></span></h1>
+        <p class="hero__lead" data-hin>Показываю, как делать сайты и ботов с нейросетями и где брать под них клиентов. Начни с бесплатного марафона и на практике пойми, подходит ли тебе AI-заработок.</p>
+        <div class="btns" data-hin>
+          <a class="btn btn--white" href="https://t.me/CodeAndCash_bot" target="_blank" rel="noopener">Пройти марафон бесплатно</a>
+          <a class="btn btn--ghost-d" href="#family">Что внутри C&amp;C Family</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <section class="sec s-paper" id="marathon" aria-labelledby="mar-title">
+    <div class="wrap marathon">
+      <div>
+        <div class="sec__head">
+          <h2 id="mar-title" data-words>Бесплатный марафон</h2>
+          <p class="lead rv">Бот бесплатно проведёт тебя через мини-версию всего пути Code&amp;Cash. Это способ на практике понять, подходит ли тебе AI-заработок, и собрать свою первую работу.</p>
+        </div>
+        <ol class="m-list">
+          <li class="rv"><div><b>Рабочая ниша</b><span>Покажет, как искать нишу, где правда нужны сайты и боты.</span></div></li>
+          <li class="rv"><div><b>Готовый промт</b><span>Дашь его нейросети и увидишь, как собирается первая работа.</span></div></li>
+          <li class="rv"><div><b>Первое сообщение клиенту</b><span>Подскажет, что написать, чтобы тебе ответили.</span></div></li>
+        </ol>
+        <div class="btns rv">
+          <a class="btn btn--ink" href="https://t.me/CodeAndCash_bot" target="_blank" rel="noopener">Открыть бота</a>
+        </div>
+      </div>
+      <div class="phone-wrap"><div aria-hidden="true" style="display:contents">
+        <div class="phone" data-phone>
+          <div class="phone__screen">
+            <div class="phone__bar"><img class="phone__ava" data-img="marathon" src="assets/marathon-ava.webp" alt="" width="34" height="34"><div><p class="phone__name">Code&amp;Cash</p><p class="phone__status">бот · марафон</p></div></div>
+            <div class="chat" data-chat>
+              <p class="msg msg--me">/start</p>
+              <figure class="msg msg--img"><img data-img="marathon" src="assets/marathon.webp" alt="Бесплатный марафон C&amp;C" width="720" height="720" loading="lazy" decoding="async"><figcaption>Бесплатный марафон C&amp;C. Поехали по шагам 👇</figcaption></figure>
+              <p class="msg"><b>Шаг 1.</b> Ищем нишу, где сайт или бот реально нужен.</p>
+              <p class="msg"><b>Шаг 2.</b> Держи готовый промт, пробуем собрать первую работу.</p>
+              <p class="msg"><b>Шаг 3.</b> Что написать первому клиенту.</p>
+              
+            </div>
+            <div class="phone__input">Сообщение</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-dark" id="family" data-family aria-labelledby="fam-title">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 id="fam-title" data-words>C&amp;C Family</h2>
+        <p class="lead rv">Команда, в которой я довожу до первого заработка с AI. Здесь нет того, что было в канале или в боте. Внутри мой собственный путь от нуля до больших кейсов.</p>
+      </div>
+      <div class="family">
+        <div class="pass-wrap rv" data-rv="card">
+          <div class="pass" data-pass>
+            <div class="pass__top">
+              <div class="pass__id"><img class="pass__ava" data-img="family" src="assets/family.webp" alt="" width="52" height="52"><div class="pass__brand"><b>C&amp;C Family</b></div></div>
+              <div class="padlock" aria-hidden="true">
+                <svg viewBox="0 0 64 64"><path class="shackle" d="M20 30V21a12 12 0 0 1 24 0v9" fill="none" stroke="#f2f2ef" stroke-width="4" stroke-linecap="round"/><rect x="12" y="29" width="40" height="29" rx="9" fill="#f2f2ef"/><circle cx="32" cy="42" r="3.6" fill="#1b1c20"/><path d="M32 45v5" stroke="#1b1c20" stroke-width="3" stroke-linecap="round"/></svg>
+              </div>
+            </div>
+            <p class="pass__wave" data-wave>Вторая волна</p>
+            <div class="pass__price"><b data-rub>2 777 ₽</b><span data-usd>$33</span></div>
+            <div class="pass__state">
+              <p class="state-line"><span class="state-dot"></span><span data-state-text>Вход пока закрыт</span></p>
+              <div class="seats"><div class="seats__bar"><i data-seats-bar></i></div><p class="seats__txt">Осталось мест: <b data-seats>—</b></p></div>
+            </div>
+            <a class="btn btn--white" data-fam-btn href="https://t.me/CodeandCash_of" target="_blank" rel="noopener"><span data-fam-btn-text>Узнать об открытии первым</span></a>
+            <a class="pass__book" data-book href="https://t.me/m/bxwMqnFtMWJh" target="_blank" rel="noopener">Забронировать место со скидкой</a>
+            <p class="pass__note" data-fam-note>Когда откроем вход, напишем в канале.</p>
+          </div>
+        </div>
+        <ol class="inside">
+          <li class="is-key rv"><b>Парсер для поиска клиентов</b><span>Главное в команде. Находит клиентов по щелчку пальцев, с любого гео и на любую тему.</span></li>
+          <li class="rv"><b>Материал для поиска клиентов</b><span>Чаты и скрипты, которые нигде не раскрывались. С ними клиенту сложно отказаться от предложения.</span></li>
+          <li class="rv"><b>Секретные промты</b><span>Их нет в открытом доступе.</span></li>
+          <li class="rv"><b>Гайды</b><span>Пошагово, по всему пути.</span></li>
+          <li class="rv"><b>Как правильно выложить сайт</b><span>Чтобы клиент получил рабочую ссылку.</span></li>
+          <li class="rv"><b>Боты с Mini App для Telegram</b><span>Как сделать качественного бота вместе с мини-приложением.</span></li>
+          <li class="rv"><b>Дополнительный заработок с AI</b><span>Ещё несколько направлений, кроме сайтов и ботов.</span></li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-light" id="parser" aria-labelledby="par-title">
+    <div class="wrap parser">
+      <div class="parser__copy">
+        <img class="parser__logo rv" data-img="parser" src="assets/parser.webp" alt="Логотип Parser C&amp;C" width="120" height="120" loading="lazy" decoding="async">
+        <h2 id="par-title" data-words>Parser C&amp;C</h2>
+        <p class="lead rv">Будет в команде. Каждый день помогает находить клиентов с любого гео и на любую тему. На поиск почти не уходит сил, остаётся писать и договариваться.</p>
+        <div class="big-num rv"><b data-count="300">0</b><span>офферов за неделю можно отписывать, почти не тратя сил на поиск</span></div>
+      </div>
+      <div>
+        <div class="pdemo rv" data-rv="card">
+          <div class="pdemo__phone"><iframe title="Демо Parser C&amp;C" data-pdemo loading="lazy"></iframe></div>
+        </div>
+        <p class="demo-note">Это демо парсера: бизнесы настоящие, но номера скрыты, а поиск идёт по нескольким загруженным городам. В самом парсере — 14 стран, сотни городов и полные номера</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-paper" id="scripts" aria-labelledby="scr-title">
+    <div class="wrap scriptc">
+      <div class="scriptc__copy">
+        <img class="parser__logo rv" data-img="script" src="assets/script.webp" alt="Логотип Script C&amp;C" width="120" height="120" loading="lazy" decoding="async">
+        <h2 id="scr-title" data-words>Script C&amp;C</h2>
+        <p class="lead rv">Клиента нашёл, теперь главное не слить разговор. Здесь можно собрать себе сколько угодно скриптов под свою нишу, чтобы клиент точно не отказался.</p>
+        <ul class="scriptc__list rv">
+          <li>Как узнать у клиента цену и бюджет</li>
+          <li>Как предложить свою услугу, чтобы не звучать как спам</li>
+          <li>Что ответить на «дорого» и «я подумаю»</li>
+          <li>Как не потерять клиента и удержать его</li>
+        </ul>
+        <p class="scriptc__more rv">Скрипты на любую тему: первое сообщение, звонок, дожим, закрытие сделки, просьба об отзыве.</p>
+      </div>
+      <div class="scriptc__demo">
+        <div class="pdemo rv" data-rv="card">
+          <div class="pdemo__phone"><iframe title="Демо Script C&amp;C" data-sdemo loading="lazy"></iframe></div>
+        </div>
+        <p class="demo-note">Это демо: здесь скрипты собираются из шаблонов. В боте их пишет нейросеть под вашу нишу и ситуацию</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-dark-2" id="author" aria-labelledby="au-title">
+    <div class="wrap author">
+      <div class="author__wrap rv" data-rv="card">
+      <div class="author__card" data-author>
+        <div class="author__photo" data-photo><img data-img="author" src="assets/alexander.webp" alt="Александр, автор Code&amp;Cash" width="900" height="900" loading="lazy" decoding="async"></div>
+        <span class="author__badge" data-badge>19</span>
+        <div class="author__meta"><span>Александр · Sunrise</span><span>@SUN9ISE</span></div>
+      </div>
+      </div>
+      <div class="author__copy">
+        <h2 id="au-title" data-words>Кто я</h2>
+        <p class="rv">Я Александр, мне 19. Учусь на программиста и веду Code&amp;Cash, канал и сообщество про заработок на AI.</p>
+        <p class="rv">Начинал со слабеньких сайтов, дошёл до реальных заказов и сайтов для клиентов. Всё, что есть в C&amp;C Family, я прошёл сам: от нуля до закрытых больших кейсов.</p>
+        <div class="btns rv">
+          <a class="btn btn--white" href="https://t.me/SUN9ISE" target="_blank" rel="noopener">Написать в личку</a>
+          <a class="btn btn--ghost-d" href="https://t.me/CodeandCash_of" target="_blank" rel="noopener">Канал Code&amp;Cash</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-light" id="reviews" aria-labelledby="rv-title">
+    <div class="wrap">
+      <div class="sec__head">
+        <h2 id="rv-title" data-words>Отзывы</h2>
+        <p class="rv-hint">Нажмите на отзыв, чтобы открыть скриншот целиком. Дальше можно листать.</p>
+      </div>
+      <div class="reviews" data-reviews role="list"></div>
+      <div class="rv-nav">
+        <a href="https://t.me/codeandcashreviews" target="_blank" rel="noopener">Все отзывы в канале →</a>
+        <div class="rv-nav__btns"><button type="button" data-rv-prev aria-label="Предыдущие отзывы">←</button><button type="button" data-rv-next aria-label="Следующие отзывы">→</button></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-dark" id="faq" aria-labelledby="faq-title">
+    <div class="wrap faq-grid">
+      <div class="sec__head">
+        <h2 id="faq-title" data-words>Частые вопросы</h2>
+      </div>
+      <div class="faq">
+        <details><summary>Нужно ли уметь программировать?<i></i></summary><p class="ans">Для старта не обязательно: код пишет нейросеть, а ты учишься ставить ей задачу и проверять результат. Попробовать можно бесплатно в марафоне.</p></details>
+        <details><summary>Чем C&amp;C Family отличается от бесплатного марафона?<i></i></summary><p class="ans">Марафон это пробная версия пути. В команде закрытые скрипты, промты, гайды, боты с Mini App и парсер для поиска клиентов. Этого нет ни в канале, ни в боте.</p></details>
+        <details><summary>Что делать, если вход закрыт?<i></i></summary><p class="ans">Подписаться на канал: когда вход откроется, там появится пост, а здесь счётчик свободных мест. Или написать мне в личку, если есть вопросы.</p></details>
+        <details><summary>Сколько времени нужно?<i></i></summary><p class="ans">Марафон проходишь в своём темпе. Дальше всё зависит от того, сколько ты готов писать клиентам: парсер берёт поиск на себя, но договариваться всё равно тебе.</p></details>
+        <details><summary>Есть гарантия заработка?<i></i></summary><p class="ans">Нет, и честно, её никто не может дать. Я даю материалы, инструменты и помощь команды. Результат зависит от того, сколько ты будешь делать.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec s-dark" aria-labelledby="final-title" style="padding-top:0">
+    <div class="wrap">
+      <div class="final__box rv" data-rv="card">
+        <h2 id="final-title">Начать можно бесплатно</h2>
+        <p class="lead" style="color:var(--on-light-mid)">Пройди марафон в боте. Если зайдёт, вступай в C&amp;C Family. Если остались вопросы, пиши мне в личку.</p>
+        <div class="btns">
+          <a class="btn btn--ink" href="https://t.me/CodeAndCash_bot" target="_blank" rel="noopener">Пройти марафон</a>
+          <a class="btn btn--ghost-l" href="https://t.me/SUN9ISE" target="_blank" rel="noopener">Задать вопрос</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap foot__grid">
+    <div class="foot__links">
+      <a href="https://t.me/SUN9ISE" target="_blank" rel="noopener">@SUN9ISE<span>личка</span></a>
+      <a href="https://t.me/CodeandCash_of" target="_blank" rel="noopener">Канал<span>Code&amp;Cash</span></a>
+      <a href="https://t.me/CodeAndCash_bot" target="_blank" rel="noopener">Марафон<span>бесплатный бот</span></a>
+      <a href="https://t.me/codeandcashreviews" target="_blank" rel="noopener">Отзывы<span>канал</span></a>
+    </div>
+    <div class="foot__legal">
+      <p>© 2026 Code&amp;Cash. Информация на сайте не является публичной офертой. Доход не гарантируется: результат зависит от ваших действий.</p>
+      <p class="foot__row"><a href="privacy.html">Политика конфиденциальности</a><button type="button" class="theme-link" data-theme-toggle>Тёмная тема</button><button type="button" data-install-foot hidden>Установить приложение</button></p>
+    </div>
+  </div>
+</footer>
+
+<button class="totop" type="button" data-totop aria-label="Наверх">
+  <svg class="ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="bg" cx="26" cy="26" r="24"/><circle class="fg" cx="26" cy="26" r="24" data-totop-ring/></svg>
+  <img class="arr" src="assets/bird.png" alt="" width="22" height="22">
+</button>
+
+
+<div class="sheet" data-sheet role="dialog" aria-modal="true" aria-labelledby="sheet-title">
+  <div class="sheet__box">
+    <h3 id="sheet-title">Установить на iPhone</h3>
+    <ol>
+      <li><span>Нажмите «Поделиться» внизу Safari</span></li>
+      <li><span>Выберите «На экран „Домой“»</span></li>
+      <li><span>Нажмите «Добавить», и иконка Code&amp;Cash появится рядом с приложениями</span></li>
+    </ol>
+    <div class="btns"><button class="btn btn--ghost-l" type="button" data-sheet-close>Позже</button><button class="btn btn--ink" type="button" data-sheet-done>Готово</button></div>
+  </div>
+</div>
+
+<div class="admin" data-admin hidden role="dialog" aria-modal="true" aria-label="Управление сайтом"><iframe title="Управление сайтом" data-admin-frame></iframe></div>
+
+<div class="lb" data-lb role="dialog" aria-modal="true" aria-label="Отзыв">
+  <div class="lb__top"><span class="lb__count" data-lb-count></span><button class="lb__x" type="button" data-lb-close>Закрыть</button></div>
+  <div class="lb__track" data-lb-track><div class="lb__slides" data-lb-slides></div></div>
+  <div class="lb__bottom"><button class="lb__arrow" type="button" data-lb-prev aria-label="Предыдущий отзыв">←</button><div class="lb__dots" data-lb-dots></div><button class="lb__arrow" type="button" data-lb-next aria-label="Следующий отзыв">→</button></div>
+</div>

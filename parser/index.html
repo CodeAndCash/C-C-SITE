@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="ru" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover,user-scalable=no">
+<meta name="theme-color" content="#151619">
+<title>Parser C&C</title>
+<style>
+:root{--bg:#151619;--s1:#1d1f23;--s2:#282a30;--ln:#33363c;--tx:#f3f3f4;--mu:#8d9097;--inv:#151619;--lf:none;color-scheme:dark}
+[data-theme=light]{--bg:#f3f3f4;--s1:#fff;--s2:#ebebed;--ln:#dcdde0;--tx:#151619;--mu:#6d7077;--inv:#fff;--lf:invert(1);color-scheme:light}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.4 -apple-system,"Segoe UI",Roboto,Inter,sans-serif;padding-bottom:calc(84px + env(safe-area-inset-bottom,0px));transition:background .3s,color .3s}
+header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:color-mix(in srgb,var(--bg) 85%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--ln)}
+.brand{display:flex;align-items:center;gap:10px;font-weight:650}
+.logo{width:26px;height:26px;filter:var(--lf)}
+.logo.big{width:72px;height:72px}
+.ic{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;transition:transform .25s}
+button{font:inherit;color:inherit;cursor:pointer;transition:background .2s,color .2s,border-color .2s,transform .15s,opacity .2s}
+button:active{transform:scale(.96)}
+.icon-btn{width:38px;height:38px;border-radius:50%;border:1px solid var(--ln);background:var(--s1);display:grid;place-items:center}
+main{padding:0 16px}
+.screen{animation:in .4s cubic-bezier(.2,.8,.2,1) both}
+@keyframes in{from{opacity:0;transform:translateY(10px)}}
+.hello{margin:18px 0 6px;font-size:22px;font-weight:650}
+.hello small{display:block;font-size:14px;font-weight:400;color:var(--mu)}
+h2{margin:18px 0 8px;font-size:22px}h2 small{color:var(--mu);font-size:15px;font-weight:400}
+h3{margin:18px 0 8px;font-size:13px;font-weight:600;color:var(--mu);text-transform:uppercase;letter-spacing:.06em}
+.card h3{margin-top:0}
+.muted{color:var(--mu)}.small{font-size:13px}p{margin:4px 0}
+.card{background:var(--s1);border:1px solid var(--ln);border-radius:18px;padding:14px 16px;margin:12px 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.row.g{margin:10px 0 4px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips.scroll{flex-wrap:nowrap;overflow-x:auto;margin:0 -16px;padding:0 16px;scrollbar-width:none}
+.chip{flex:none;padding:9px 14px;border-radius:99px;border:1px solid var(--ln);background:var(--s1)}
+.chip.on,.seg .on,.st .on{background:var(--tx);color:var(--inv);border-color:var(--tx)}
+input{width:100%;padding:13px 14px;background:var(--s1);border:1px solid var(--ln);border-radius:14px;color:var(--tx);font-size:16px;outline:0;transition:border-color .2s}
+input:focus{border-color:var(--tx)}#cn{margin-top:10px}
+.seg{display:flex;gap:4px;padding:4px;background:var(--s2);border-radius:14px}
+.seg button{flex:1;padding:10px 4px;border:0;background:transparent;color:var(--mu);border-radius:10px}
+.cta{width:100%;margin-top:20px;padding:15px;border:0;border-radius:16px;background:var(--tx);color:var(--inv);font-size:16px;font-weight:600}
+.cta:disabled{opacity:.35}
+.bar{height:6px;background:var(--s2);border-radius:99px;overflow:hidden;margin:8px 0}
+.bar i{display:block;height:100%;background:var(--tx);border-radius:99px;transform-origin:left;animation:grow .9s cubic-bezier(.2,.8,.2,1) both;transition:width .3s}
+@keyframes grow{from{transform:scaleX(0)}}
+.bar.wide{width:240px;margin:14px auto}
+.lead{animation:in .45s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(min(var(--i,0),10)*45ms)}
+.hot{position:relative;min-width:44px;padding:3px 7px 4px;border-radius:9px;border:0;background:var(--s2);display:flex;flex-direction:column;align-items:center;line-height:1.1}
+.hot b{font-size:12.5px}.hot small{margin-top:1px;font-size:8px;letter-spacing:.06em;text-transform:uppercase;color:var(--mu)}
+.tip{position:absolute;right:0;top:calc(100% + 8px);width:220px;padding:10px 12px;border-radius:12px;background:var(--tx);color:var(--inv);font-size:12.5px;font-weight:400;line-height:1.35;letter-spacing:0;text-align:left;text-transform:none;opacity:0;transform:translateY(-4px);pointer-events:none;transition:opacity .2s,transform .2s;z-index:6;box-shadow:0 8px 24px rgba(0,0,0,.35)}
+.hot.open .tip{opacity:1;transform:none}
+.pill{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600}
+.pill.none{background:var(--tx);color:var(--inv)}.pill.weak{border:1px solid var(--mu)}
+.tel{display:inline-flex;align-items:center;gap:6px;color:var(--tx);text-decoration:none;font-size:14px}
+.st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:12px}
+.st button{padding:9px 0;font-size:12.5px;border:1px solid var(--ln);background:transparent;color:var(--mu);border-radius:10px}
+.top{display:flex;justify-content:space-between;align-items:center}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+.tile{margin:0}.tile b{display:block;font-size:30px;margin-top:4px}
+.fn{display:grid;grid-template-columns:84px 1fr 40px;align-items:center;gap:10px;font-size:13px}
+.fn em{font-style:normal;color:var(--mu);text-align:right}
+.usr{padding:10px 0;border-top:1px solid var(--ln)}.usr:first-of-type{border:0;padding-top:0}
+.ghost{flex:1;padding:13px;border:1px solid var(--ln);background:var(--s1);border-radius:14px;display:inline-flex;justify-content:center;align-items:center;gap:8px}
+.center{display:grid;place-items:center;align-content:center;text-align:center;min-height:70vh;gap:6px}
+.pulse{animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{transform:scale(1.1);opacity:.6}}
+.empty{text-align:center;color:var(--mu);padding:60px 0}.empty .ic{width:36px;height:36px;opacity:.5}
+nav{position:fixed;left:0;right:0;bottom:0;display:flex;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(14px);border-top:1px solid var(--ln)}
+nav button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;border:0;background:none;color:var(--mu);font-size:11px;padding:6px 0}
+nav .on{color:var(--tx)}nav .on .ic{transform:translateY(-2px)}
+#toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translate(-50%,10px);background:var(--tx);color:var(--inv);padding:10px 16px;border-radius:99px;font-size:14px;opacity:0;pointer-events:none;transition:.3s;max-width:90%;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+.ct{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 2px}
+.ct a{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border:1px solid var(--ln);border-radius:99px;background:var(--s2);color:var(--tx);text-decoration:none;font-size:12.5px;transition:transform .15s,background .2s}
+.ct a:active{transform:scale(.95)}.ct a .ic{width:14px;height:14px}
+.ct a.site{background:var(--tx);color:var(--inv);border-color:var(--tx);font-weight:600}
+.cta{transition:box-shadow .25s,opacity .2s,transform .15s}.ct a{transition:transform .15s,background .2s,border-color .2s,opacity .2s}
+@media(hover:hover){
+.chip:hover:not(.on),.icon-btn:hover,.ghost:hover,.hot:hover{background:var(--s2);border-color:var(--mu)}
+.chip.on:hover,.ct a.site:hover{opacity:.9}
+.seg button:hover:not(.on){color:var(--tx);background:color-mix(in srgb,var(--tx) 7%,transparent)}
+.st button:hover:not(.on){color:var(--tx);border-color:var(--mu);background:color-mix(in srgb,var(--tx) 6%,transparent)}
+.ct a:not(.site):hover{border-color:var(--mu);background:color-mix(in srgb,var(--tx) 10%,var(--s2))}
+.cta:hover:not(:disabled){box-shadow:0 0 0 4px color-mix(in srgb,var(--tx) 15%,transparent)}
+nav button:hover{color:var(--tx)}.tel:hover{opacity:.7}.hot:hover .tip{opacity:1;transform:none}}
+.edit{margin:10px 0 2px;padding:12px;border:1px solid var(--ln);border-radius:14px;background:var(--s2);animation:in .3s both}
+.edit .chips{margin-top:10px}.edit .chip{background:var(--s1)}.edit .chip.on{background:var(--tx)}
+.step{display:flex;gap:8px}.step button{width:34px;height:34px;border-radius:50%;border:1px solid var(--ln);background:var(--s1);font-size:18px;line-height:1}
+.mini{padding:5px 10px;font-size:12px;display:inline-flex;align-items:center;gap:5px}.mini .ic{width:13px;height:13px}
+.ghost.go{background:var(--tx);color:var(--inv);border-color:var(--tx);font-weight:600}
+@media(hover:hover){.step button:hover{border-color:var(--mu)}}
+.faq details{border-top:1px solid var(--ln)}.faq details:first-of-type{border-top:0}
+.faq summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;font-weight:600}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";flex:none;width:26px;height:26px;border-radius:50%;border:1px solid var(--ln);display:grid;place-items:center;color:var(--mu);font-weight:400;transition:transform .25s}
+.faq details[open] summary::after{transform:rotate(45deg)}
+.faq details p{margin:0 0 12px;color:var(--mu)}
+.keys{display:grid;gap:14px}.keys div{display:grid;justify-items:start;gap:6px}
+.keys b{padding:3px 9px;border-radius:8px;background:var(--s2);font-size:12.5px;font-weight:600;white-space:nowrap}
+.keys span{color:var(--mu);font-size:14px}
+.contact{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:6px;padding:14px;border-radius:16px;background:var(--tx);color:var(--inv);text-decoration:none;font-weight:600}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute"><defs>
+<symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></symbol>
+<symbol id="i-list" viewBox="0 0 24 24"><path d="M8 6h12M8 12h12M8 18h12M4 6h.01M4 12h.01M4 18h.01"/></symbol>
+<symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M12 20V4M19 20v-6"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3 4 6v6c0 4.5 3.4 7.6 8 9 4.6-1.4 8-4.5 8-9V6z"/></symbol>
+<symbol id="i-moon" viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 1 1 9.5 4 6.5 6.5 0 0 0 20 14.5z"/></symbol>
+<symbol id="i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></symbol>
+<symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11m0 0-4-4m4 4 4-4M5 20h14"/></symbol>
+<symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 3 6a2 2 0 0 1 2-2z"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="m3 11 18-8-8 18-2-8z"/></symbol>
+<symbol id="i-link" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+<symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></symbol>
+<symbol id="i-edit" viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16zM13.5 6.5l4 4"/></symbol>
+</defs></svg>
+<header>
+  <div class="brand"><img class="logo" src="data:image/png;base64,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" alt="">Parser C&amp;C</div>
+  <button class="icon-btn" id="theme" aria-label="Тема"></button>
+</header>
+<main id="app"></main>
+<nav id="tabs"></nav>
+<div id="toast"></div>
+<script>
+let tg=null;
+const IS_ADMIN=true; /* демо: в рабочей версии роль приходит с сервера по проверенным initData */
+const LIMIT=70;
+const COUNTRIES=[["RU","Россия"],["UA","Украина"],["BY","Беларусь"],["KZ","Казахстан"],["PL","Польша"],["UZ","Узбекистан"],["GE","Грузия"],["LT","Литва"],["DE","Германия"],["AE","ОАЭ"]];
+const CC={RU:"7",UA:"380",BY:"375",KZ:"7",PL:"48",UZ:"998",GE:"995",LT:"370",DE:"49",AE:"971"};
+const NICHES=["Барбершопы","Салоны красоты","Автосервисы","Стоматологии","Фитнес-клубы","Своя ниша"];
+const ST={new:"Новый",written:"Написал",replied:"Ответил",rejected:"Отказ",client:"Клиент"};
+const FL=[["all","Все"],["new","Новые"],["written","Написал"],["replied","Ответил"],["client","Клиенты"]];
+const TABS=[["search","Поиск","search"],["leads","Лиды","list"],["stats","Статистика","chart"],["faq","Вопросы","help"],["admin","Админ","shield"]];
+const USERS=[{n:"@alex_dev",f:142,c:61,r:24,k:6,t:70,lim:100},{n:"@mira",f:96,c:40,r:15,k:3,t:45,lim:70},{n:"@denis_k",f:58,c:22,r:6,k:1,t:30,lim:70},{n:"@oleg",f:21,c:5,r:1,k:0,t:15,lim:70}];
+const POOL=["Barber One","Razor & Co","Gentlemen","Fade Lab","Sharp Cut","Old Town Barber","Black Chair","Mr. Brush","Crown Barbers","Studio 21","Beard Club","Noble Cut","Iron Scissors","Urban Fade","Classic Line"];
+const REASONS=[["не адаптирован под телефон","нет HTTPS"],["медленно грузится (4.2 с)"],["не обновлялся с 2019"],["бесплатный поддомен"]];
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const ic=n=>`<svg class="ic"><use href="#i-${n}"/></svg>`;
+const hap=()=>{try{tg&&tg.HapticFeedback&&tg.HapticFeedback.selectionChanged()}catch(e){}};
+const countOpts=r=>{const o=[15,30,50].filter(n=>n<=r);if(r>0&&r<30&&!o.includes(r))o.push(r);return o};
+const S={tab:"search",country:"PL",city:"Warszawa",niche:0,custom:"",flt:"both",count:15,used:45,filter:"all",admin:IS_ADMIN,edit:null,editVal:70};
+
+function ext(none,name){const s=name.toLowerCase().replace(/[^a-z0-9]+/g,""),p=Math.random,ph=()=>"+"+(CC[S.country]||"48")+Math.floor(1e8+p()*9e8),c={};
+if(p()<.4)c.tg="@"+s;if(p()<.3)c.vk="id"+Math.floor(1e6+p()*9e6);if(p()<.2)c.vkg="club"+Math.floor(1e6+p()*9e6);if(p()<.35)c.wa=ph();if(p()<.2)c.vb=ph();
+return{url:none?"":"https://"+s+".com",c}}
+function gen(n){const out=[];for(let i=0;i<n;i++){const none=S.flt=="none"?true:S.flt=="weak"?false:Math.random()<.55;const r=()=>100+Math.floor(Math.random()*899);
+out.push({id:Date.now()+i,name:POOL[i%POOL.length]+(i>=POOL.length?" "+(i+1):""),country:S.country,city:S.city||"—",phone:"+"+(CC[S.country]||"48")+" "+r()+" "+r()+" "+r(),site:none?"none":"weak",reasons:none?["сайта нет"]:REASONS[i%REASONS.length],hot:Math.floor(45+Math.random()*50),status:"new",...ext(none,POOL[i%POOL.length])})}
+return out.sort((a,b)=>b.hot-a.hot)}
+let leads=gen(6);["written","replied","client","written","new","rejected"].forEach((s,i)=>leads[i].status=s);
+
+function vSearch(){const rem=Math.max(0,LIMIT-S.used),opts=countOpts(rem);if(!opts.includes(S.count))S.count=opts[0]||0;
+const nm=tg&&tg.initDataUnsafe&&tg.initDataUnsafe.user&&tg.initDataUnsafe.user.first_name;
+return `<section class="screen"><div class="hello">${nm?"Привет, "+esc(nm):"Привет"}<small>Найди бизнесы, которым нужен сайт</small></div>
+<div class="card"><div class="row"><span>Лимит на сегодня</span><b>${S.used} / ${LIMIT}</b></div><div class="bar"><i style="width:${S.used/LIMIT*100}%"></i></div><p class="muted small">Осталось ${rem}. Обновится в 00:00.</p></div>
+<h3>Страна</h3><div class="chips scroll">${COUNTRIES.map(([c,n])=>`<button class="chip ${S.country==c?"on":""}" data-act="country" data-v="${c}"><b>${c}</b> ${n}</button>`).join("")}</div>
+<h3>Город</h3><input id="city" value="${esc(S.city)}" placeholder="Например, Варшава" autocomplete="off">
+<h3>Ниша</h3><div class="chips">${NICHES.map((n,i)=>`<button class="chip ${S.niche==i?"on":""}" data-act="niche" data-v="${i}">${n}</button>`).join("")}</div>${S.niche==5?`<input id="cn" value="${esc(S.custom)}" placeholder="Слово из названия, например шиномонтаж">`:""}
+<h3>Кого искать</h3><div class="seg">${[["none","Без сайта"],["weak","Слабый сайт"],["both","Оба"]].map(([k,n])=>`<button class="${S.flt==k?"on":""}" data-act="flt" data-v="${k}">${n}</button>`).join("")}</div>
+<h3>Сколько</h3><div class="seg">${opts.length?opts.map(n=>`<button class="${S.count==n?"on":""}" data-act="count" data-v="${n}">${n}${[15,30,50].includes(n)?"":" · остаток"}</button>`).join(""):`<button disabled>Лимит исчерпан</button>`}</div>
+<button class="cta" data-act="go" ${rem&&S.count?"":"disabled"}>Найти ${S.count||""} бизнесов</button>
+<p class="muted small" style="text-align:center;margin-top:12px">Данные: Google Places или OpenStreetMap</p></section>`}
+
+function go(){const n=S.count;if(!n||n>LIMIT-S.used)return;
+$("#app").innerHTML=`<section class="screen center"><img class="logo big pulse" src="data:image/png;base64,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" alt=""><h2>Ищу и проверяю сайты</h2><p class="muted" id="pt">Найдено 0 из ${n} · проверено 0</p><div class="bar wide"><i id="pb" style="width:0"></i></div></section>`;
+const pb=$("#pb"),pt=$("#pt");let k=0;const t=setInterval(()=>{k+=Math.ceil(n/8)+1;const f=Math.min(n,Math.round(k*.8));pb.style.width=f/n*100+"%";pt.textContent=`Найдено ${f} из ${n} · проверено ${k}`;
+if(f>=n){clearInterval(t);setTimeout(()=>{leads=gen(n).concat(leads);S.used+=n;S.tab="leads";S.filter="all";toast(`Найдено ${n} бизнесов`);render()},500)}},350)}
+
+const dg=x=>String(x).replace(/\D/g,"");
+function contacts(l){const c=l.c||{},a=[],t=' target="_blank" rel="noopener"';
+if(l.url&&/^https?:\/\//.test(l.url))a.push(`<a class="site" href="${esc(l.url)}"${t}>${ic("link")}Сайт</a>`);
+if(c.tg)a.push(`<a href="https://t.me/${esc(c.tg.replace("@",""))}"${t}>Telegram</a>`);
+if(c.vk)a.push(`<a href="https://vk.com/${esc(c.vk)}"${t}>VK</a>`);
+if(c.vkg)a.push(`<a href="https://vk.com/${esc(c.vkg)}"${t}>VK группа</a>`);
+if(c.wa)a.push(`<a href="https://wa.me/${dg(c.wa)}"${t}>WhatsApp</a>`);
+if(c.vb)a.push(`<a href="viber://chat?number=%2B${dg(c.vb)}">Viber</a>`);
+return a.length?`<div class="ct">${a.join("")}</div>`:""}
+const why=l=>{const r=l.reasons.filter(x=>x!="сайта нет");return r.length?`<p class="muted small">${r.map(esc).join(" · ")}</p>`:""};
+function card(l,i){return `<article class="card lead" style="--i:${i}"><div class="row"><b>${esc(l.name)}</b><button class="hot" data-act="tip" aria-label="Шанс"><b>${l.hot}%</b><small>шанс</small><span class="tip">Оценка перспективности лида, а не гарантия сделки. Чем выше, тем сильнее бизнесу нужен сайт и тем проще с ним связаться.</span></button></div>
+<p class="muted small">${l.country} · ${esc(l.city)}</p>
+<div class="row g"><span class="pill ${l.site}">${l.site=="none"?"Сайта нет":"Слабый сайт"}</span><a class="tel" href="tel:${l.phone.replace(/\s/g,"")}">${ic("phone")}${esc(l.phone)}</a></div>
+${contacts(l)}${why(l)}
+<div class="st">${["written","replied","rejected","client"].map(s=>`<button class="${l.status==s?"on":""}" data-act="st" data-id="${l.id}" data-v="${s}">${ST[s]}</button>`).join("")}</div></article>`}
+function vLeads(){const list=leads.filter(l=>S.filter=="all"||l.status==S.filter);
+return `<section class="screen"><div class="top"><h2>Лиды <small>${leads.length}</small></h2><button class="icon-btn" data-act="toast" data-v="Excel-файл придёт в чат с ботом">${ic("download")}</button></div>
+<div class="chips scroll">${FL.map(([k,n])=>`<button class="chip ${S.filter==k?"on":""}" data-act="filter" data-v="${k}">${n}</button>`).join("")}</div>
+${list.length?list.map(card).join(""):`<div class="empty">${ic("list")}<p>Здесь пока пусто</p></div>`}</section>`}
+
+function vStats(){const c=leads.length,w=leads.filter(l=>l.status!="new").length,r=leads.filter(l=>["replied","client"].includes(l.status)).length,k=leads.filter(l=>l.status=="client").length;
+const p=(a,b)=>b?Math.round(a/b*100):0,rows=[["Найдено",c],["Связались",w],["Ответили",r],["Клиенты",k]];
+return `<section class="screen"><h2>Статистика</h2><div class="grid">${rows.map(([n,v])=>`<div class="card tile"><small class="muted">${n}</small><b class="num" data-to="${v}">0</b></div>`).join("")}</div>
+<div class="card"><h3>Воронка</h3>${rows.map(([n,v])=>`<div class="fn"><span>${n}</span><div class="bar"><i style="width:${p(v,c)}%"></i></div><em>${p(v,c)}%</em></div>`).join("")}</div>
+<div class="card"><div class="row"><span>Ответили от найденных</span><b>${p(r,c)}%</b></div><div class="row g"><span>Клиенты от найденных</span><b>${p(k,c)}%</b></div></div></section>`}
+
+function userRow(u,i){const ed=S.edit===i;
+return `<div class="usr"><div class="row"><b>${u.n}</b><span class="muted small">сегодня ${u.t}/${u.lim}</span></div><div class="bar"><i style="width:${Math.min(100,u.t/u.lim*100)}%"></i></div>
+<div class="row"><p class="muted small">найдено ${u.f} · ответили ${u.r} · клиенты ${u.k} · конв. ${u.f?Math.round(u.k/u.f*100):0}%</p><button class="chip mini ${ed?"on":""}" data-act="edit" data-v="${i}">${ic("edit")}Лимит</button></div>
+${ed?`<div class="edit"><div class="row"><span class="muted small">Дневной лимит: <b>${S.editVal}</b></span><div class="step"><button data-act="limd" data-v="-10" aria-label="Меньше">−</button><button data-act="limd" data-v="10" aria-label="Больше">+</button></div></div>
+<div class="chips">${[70,100,150,200].map(n=>`<button class="chip ${S.editVal==n?"on":""}" data-act="limset" data-v="${n}">${n}</button>`).join("")}</div>
+<div class="row g"><button class="ghost" data-act="limcancel">Отмена</button><button class="ghost go" data-act="limsave">Сохранить</button></div></div>`:""}</div>`}
+function vAdmin(){const f=USERS.reduce((a,u)=>a+u.f,0),k=USERS.reduce((a,u)=>a+u.k,0),act=USERS.filter(u=>u.t>0).length;
+return `<section class="screen"><h2>Админ-панель</h2><div class="grid">${[["Участников",USERS.length],["Активны сегодня",act],["Лидов найдено",f],["Клиентов",k]].map(([n,v])=>`<div class="card tile"><small class="muted">${n}</small><b class="num" data-to="${v}">0</b></div>`).join("")}</div>
+<div class="card"><h3>Участники</h3>${USERS.map(userRow).join("")}</div>
+<div class="row"><button class="ghost" data-act="toast" data-v="Добавить: команда /adduser ID в чате бота">${ic("plus")}Участник</button><button class="ghost" data-act="toast" data-v="Рассылка: команда /broadcast в чате бота">${ic("send")}Рассылка</button></div></section>`}
+
+const CONTACT="SUN9ISE";
+function vFaq(){const K=(a,b)=>`<div><b>${a}</b><span>${b}</span></div>`,Q=(q,a)=>`<details><summary>${q}</summary><p>${a}</p></details>`;
+return `<section class="screen"><h2>Вопросы</h2>
+<div class="card"><h3>Для чего парсер</h3><p>Parser C&amp;C ищет бизнесы, которым нужен сайт или бот: у кого сайта нет совсем или он слабый. Выбираешь страну, город и нишу, парсер собирает список с телефонами и контактами и сразу показывает, почему бизнесу нужен сайт. Тебе остаётся написать и договориться.</p><p class="muted small" style="margin-top:8px">Парсер входит в C&amp;C Family и открывается прямо в Telegram.</p></div>
+<div class="card"><h3>Поиск</h3><div class="keys">
+${K("Лимит","Сколько бизнесов ещё можно найти сегодня. Обновляется в 00:00.")}
+${K("Страна","Где искать. Список прокручивается вбок.")}
+${K("Город","Впиши город, например Варшава.")}
+${K("Ниша","Какие бизнесы нужны. «Своя ниша» — впиши слово из названия, например шиномонтаж.")}
+${K("Кого искать","«Без сайта», «Слабый сайт» или оба варианта сразу.")}
+${K("Сколько","15, 30 или 50 бизнесов за один поиск. Если лимит почти закончился, появится остаток.")}
+${K("Найти","Запускает поиск. Готовый список откроется во вкладке «Лиды».")}
+</div></div>
+<div class="card"><h3>Лиды</h3><div class="keys">
+${K("Фильтры","Все, новые, кому уже написал, кто ответил, клиенты.")}
+${K("Шанс, %","Оценка, насколько бизнесу нужен сайт и насколько просто с ним связаться. Это не гарантия сделки.")}
+${K("Сайта нет / Слабый сайт","Что не так с сайтом. Под контактами написана причина: нет HTTPS, медленно грузится, не адаптирован под телефон и т.д.")}
+${K("Телефон","Нажми, чтобы позвонить.")}
+${K("Сайт, Telegram, VK, WhatsApp, Viber","Контакты, которые удалось найти. Нажми, чтобы сразу написать.")}
+${K("Написал, Ответил, Отказ, Клиент","Отмечай, на каком этапе человек. Нажми ещё раз, чтобы снять отметку.")}
+${K("Скачать","Список лидов придёт Excel-файлом в чат с ботом.")}
+</div></div>
+<div class="card"><h3>Статистика</h3><div class="keys">
+${K("Цифры","Сколько найдено, кому написал, кто ответил и сколько стало клиентами.")}
+${K("Воронка","Сколько процентов от найденных дошло до каждого этапа.")}
+</div><p class="muted small" style="margin-top:10px">Тёмная и светлая тема переключаются кнопкой справа вверху.</p></div>
+<div class="card faq"><h3>Частые вопросы</h3>
+${Q("Откуда берутся бизнесы?","Из Google Places и OpenStreetMap. Парсер сам проверяет сайт каждого бизнеса.")}
+${Q("Что значит «слабый сайт»?","Сайт есть, но с ним что-то не так: не открывается нормально на телефоне, нет HTTPS, долго грузится, давно не обновлялся или стоит на бесплатном поддомене.")}
+${Q("Почему есть дневной лимит?","Чтобы поиск работал быстро у всех участников. Если нужно больше, напиши, лимит можно поднять.")}
+${Q("Что писать бизнесу?","Готовые шаблоны сообщений под разные ниши есть в C&amp;C Family.")}
+${Q("Как получить доступ?","Парсер доступен участникам C&amp;C Family. Напиши в личку, расскажу, как вступить.")}
+${Q("Что-то не работает","Напиши в личку и опиши, что случилось. Лучше сразу со скриншотом.")}
+</div>
+<a class="contact" href="https://t.me/${CONTACT}" target="_blank" rel="noopener">${ic("send")}Написать @${CONTACT}</a>
+<p class="muted small" style="text-align:center;margin:10px 0 4px">Ответы на вопросы, доступ и помощь</p></section>`}
+
+function countUp(e,to){const t0=performance.now();(function f(t){const p=Math.min(1,(t-t0)/700);e.textContent=Math.round(to*(1-Math.pow(1-p,3)));if(p<1)requestAnimationFrame(f)})(t0)}
+function render(keep){const y=scrollY;$("#app").innerHTML=({search:vSearch,leads:vLeads,stats:vStats,faq:vFaq,admin:vAdmin})[S.tab]();
+$("#tabs").innerHTML=TABS.filter(t=>t[0]!="admin"||S.admin).map(([k,n,i])=>`<button class="${S.tab==k?"on":""}" data-act="tab" data-v="${k}">${ic(i)}<span>${n}</span></button>`).join("");
+document.querySelectorAll(".num").forEach(e=>keep?e.textContent=e.dataset.to:countUp(e,+e.dataset.to));scrollTo(0,keep?y:0)}
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(()=>t.classList.remove("show"),2400)}
+function setTheme(t){document.documentElement.dataset.theme=t;$("#theme").innerHTML=ic(t=="dark"?"sun":"moon");const bg=t=="dark"?"#151619":"#f3f3f4";document.querySelector("meta[name=theme-color]").content=bg;try{tg&&(tg.setHeaderColor(bg),tg.setBackgroundColor(bg))}catch(e){}}
+
+document.addEventListener("click",e=>{if(!e.target.closest(".hot"))document.querySelectorAll(".hot.open").forEach(x=>x.classList.remove("open"));const ea=e.target.closest(".ct a,.contact");if(ea&&tg){try{if(/^https:\/\/t\.me\//.test(ea.href)){e.preventDefault();tg.openTelegramLink(ea.href)}else if(/^https?:/.test(ea.href)){e.preventDefault();tg.openLink(ea.href)}}catch(x){}}
+const b=e.target.closest("[data-act]");if(b&&!b.disabled){hap();const a=b.dataset.act,v=b.dataset.v;
+if(a=="tab"){S.tab=v;render()}
+else if(a=="country"){S.country=v;render(1)}
+else if(a=="niche"){S.niche=+v;render(1)}
+else if(a=="flt"){S.flt=v;render(1)}
+else if(a=="count"){S.count=+v;render(1)}
+else if(a=="filter"){S.filter=v;render(1)}
+else if(a=="st"){const l=leads.find(x=>x.id==b.dataset.id);if(l){l.status=l.status==v?"new":v;render(1)}}
+else if(a=="edit"){const i=+v;S.edit=S.edit===i?null:i;S.editVal=USERS[i].lim;render(1)}
+else if(a=="limd"){S.editVal=Math.max(0,Math.min(1000,S.editVal+ +v));render(1)}
+else if(a=="limset"){S.editVal=+v;render(1)}
+else if(a=="limcancel"){S.edit=null;render(1)}
+else if(a=="limsave"){const u=USERS[S.edit];u.lim=S.editVal;S.edit=null;toast(`Лимит ${u.n}: ${u.lim} в день`);render(1)}
+else if(a=="tip"){const o=b.classList.contains("open");document.querySelectorAll(".hot.open").forEach(x=>x.classList.remove("open"));if(!o)b.classList.add("open")}
+else if(a=="toast")toast(v);
+else if(a=="go")go()}
+if(e.target.closest("#theme")){hap();setTheme(document.documentElement.dataset.theme=="dark"?"light":"dark")}});
+document.addEventListener("input",e=>{if(e.target.id=="city")S.city=e.target.value;if(e.target.id=="cn")S.custom=e.target.value});
+setTheme("dark");render();
+/* SDK Telegram грузится в фоне: если telegram.org медленный или недоступен, приложение всё равно работает */
+(function(){const sc=document.createElement("script");sc.src="https://telegram.org/js/telegram-web-app.js";
+sc.onload=()=>{tg=window.Telegram&&Telegram.WebApp;try{tg&&(tg.ready(),tg.expand())}catch(e){}
+if(tg&&tg.initData&&tg.colorScheme=="light")setTheme("light");
+if(S.tab=="search"&&document.activeElement.tagName!="INPUT")render(1)};document.head.appendChild(sc)})();
+</script>
+</body>
+</html>

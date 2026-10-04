@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<title>Управление — Code&amp;Cash</title>
+<meta name="theme-color" content="#151619">
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32" media="(prefers-color-scheme: dark)"><link rel="icon" href="icons/favicon-dark-32.png" sizes="32x32" media="(prefers-color-scheme: light)">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geologica:wght@500;600&family=Golos+Text:wght@400;500;600&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+  :root { --dark: #151619; --dark-2: #1d1e22; --dark-3: #26272c; --on: #f2f2ef; --mid: #9fa0a6; --low: #66676d; --line: rgb(255 255 255 / 0.1); color-scheme: dark; }
+  * { box-sizing: border-box; }
+  body { margin: 0; overflow-x: clip; background: var(--dark); color: var(--on); font: 400 16px/1.5 "Golos Text", system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+  .wrap { max-width: 640px; margin: 0 auto; padding: calc(24px + env(safe-area-inset-top, 0px)) 16px calc(120px + env(safe-area-inset-bottom, 0px)); display: grid; gap: 16px; }
+  h1 { font-family: Geologica, sans-serif; font-weight: 600; font-size: 28px; letter-spacing: -0.02em; margin: 0; }
+  h2 { font-family: Geologica, sans-serif; font-weight: 600; font-size: 19px; margin: 0 0 4px; }
+  p { margin: 0; }
+  .muted { color: var(--mid); font-size: 14px; }
+  .head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .close { min-height: 42px; padding: 0 16px; }
+  .card { background: var(--dark-2); border: 1px solid var(--line); border-radius: 20px; padding: 18px; display: grid; gap: 14px; }
+  label { display: grid; gap: 6px; font-size: 14px; color: var(--mid); }
+  input, textarea { width: 100%; min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--dark); color: var(--on); padding: 12px 14px; font: inherit; }
+  textarea { min-height: 110px; resize: vertical; }
+  input:focus, textarea:focus { outline: none; border-color: rgb(255 255 255 / 0.4); }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .btn { min-height: 50px; border-radius: 14px; border: 0; font: inherit; font-weight: 500; cursor: pointer; padding: 0 18px; }
+  .btn--white { background: var(--on); color: var(--dark); }
+  .btn--ghost { background: transparent; color: var(--on); border: 1px solid rgb(255 255 255 / 0.2); }
+  .btn:disabled { opacity: 0.5; cursor: default; }
+  .switch { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px; border-radius: 14px; background: var(--dark-3); cursor: pointer; }
+  .switch b { font-weight: 600; display: block; }
+  .switch input { position: absolute; opacity: 0; width: 1px; height: 1px; }
+  .switch i { flex: none; width: 52px; height: 32px; border-radius: 16px; background: #3a3b41; position: relative; transition: background 200ms; }
+  .switch i::after { content: ""; position: absolute; left: 3px; top: 3px; width: 26px; height: 26px; border-radius: 50%; background: #fff; transition: transform 250ms cubic-bezier(.2,0,0,1); }
+  .switch input:checked + i { background: #e8e8e5; }
+  .switch input:checked + i::after { transform: translateX(20px); background: var(--dark); }
+  .switch input:focus-visible + i { outline: 2px solid #fff; outline-offset: 3px; }
+  .stepper { display: grid; grid-template-columns: 50px 1fr 50px; gap: 8px; }
+  .stepper input { text-align: center; font-size: 20px; font-weight: 600; }
+  .stepper button { min-height: 48px; border-radius: 12px; border: 1px solid var(--line); background: var(--dark-3); color: var(--on); font-size: 22px; cursor: pointer; }
+  .rv { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; padding: 12px; border-radius: 14px; background: var(--dark); border: 1px solid var(--line); }
+  .rv p { overflow-wrap: anywhere; font-size: 14px; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .rv small { color: var(--low); font-size: 12px; }
+  .rv img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; }
+  .rv__tools { display: flex; gap: 6px; align-items: start; }
+  .rv__tools button { width: 36px; height: 36px; border-radius: 10px; border: 1px solid var(--line); background: var(--dark-3); color: var(--on); cursor: pointer; }
+  .list { display: grid; gap: 8px; }
+  .bar { position: fixed; left: 0; right: 0; bottom: 0; padding: 12px 16px calc(12px + env(safe-area-inset-bottom, 0px)); background: rgb(21 22 25 / 0.95); border-top: 1px solid var(--line); display: flex; gap: 10px; align-items: center; justify-content: center; }
+  .bar .btn { flex: 1; max-width: 400px; }
+  .status { font-size: 14px; color: var(--mid); min-height: 1.4em; }
+  .status.ok { color: #cfe8d2; } .status.err { color: #f0b7b0; }
+  details summary { cursor: pointer; color: var(--mid); font-size: 14px; }
+  details ol { color: var(--mid); font-size: 14px; padding-left: 20px; margin: 8px 0 0; display: grid; gap: 6px; }
+  code { font-family: "JetBrains Mono", monospace; font-size: 13px; background: var(--dark-3); padding: 2px 6px; border-radius: 6px; }
+  .rved { grid-column: 1 / -1; display: grid; gap: 10px; padding-top: 10px; border-top: 1px solid var(--line); }
+  .rved .row2 { display: flex; gap: 8px; flex-wrap: wrap; }
+  .rved .btn { min-height: 42px; font-size: 14px; }
+  .pic { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 12px; align-items: center; padding: 12px; border-radius: 14px; background: var(--dark); border: 1px solid var(--line); }
+  .pic img { width: 64px; height: 64px; border-radius: 12px; object-fit: cover; background: var(--dark-3); }
+  .pic b { display: block; font-weight: 600; }
+  .pic .row2 { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px; }
+  .filebtn { position: relative; overflow: hidden; display: inline-flex; align-items: center; justify-content: center; min-height: 40px; padding: 0 14px; border-radius: 12px; border: 1px solid rgb(255 255 255 / 0.2); font-size: 14px; color: var(--on); cursor: pointer; }
+  .filebtn input { position: absolute; inset: 0; opacity: 0; cursor: pointer; min-height: 0; }
+  .linkbtn { min-height: 40px; padding: 0 12px; border-radius: 12px; border: 1px solid var(--line); background: transparent; color: var(--mid); font: inherit; font-size: 14px; cursor: pointer; }
+  [hidden] { display: none !important; }
+  a { color: inherit; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="head">
+    <h1>Управление сайтом</h1>
+    <button class="btn btn--ghost close" type="button" id="close" hidden>Закрыть</button>
+  </div>
+  <div>
+    <p class="muted">Только для владельца: без пароля здесь ничего не сохранить. Здесь меняются набор в C&amp;C Family и отзывы, на сайте изменения видны сразу.</p>
+  </div>
+
+  <section class="card" id="connect">
+    <h2>Вход</h2>
+    <label>Пароль<input id="pass" type="password" autocomplete="current-password" placeholder="Пароль из настроек Vercel"></label>
+    <label class="switch" style="padding:10px 14px"><span><b>Запомнить на этом устройстве</b><span class="muted">Пароль хранится только в этом браузере</span></span><input id="remember" type="checkbox" checked><i></i></label>
+    <button class="btn btn--white" id="load">Войти</button>
+    <p class="status" id="st-connect"></p>
+    <button class="btn btn--ghost" id="logout" type="button" hidden>Выйти на этом устройстве</button>
+  </section>
+
+  <div id="editor" hidden style="display:grid;gap:16px">
+    <section class="card">
+      <h2>C&amp;C Family</h2>
+      <label class="switch"><span><b>Вход открыт</b><span class="muted" id="open-hint">Сейчас на сайте замок и «Вход пока закрыт»</span></span><input id="open" type="checkbox"><i></i></label>
+      <label>Осталось мест
+        <div class="stepper"><button type="button" data-step="-1" aria-label="Минус место">−</button><input id="seats" type="number" min="0" inputmode="numeric"><button type="button" data-step="1" aria-label="Плюс место">+</button></div>
+      </label>
+      <label>Всего мест в волне (для полоски)<input id="total" type="number" min="0" inputmode="numeric"></label>
+      <div class="row">
+        <label>Цена, ₽<input id="priceRub" inputmode="numeric"></label>
+        <label>Цена, $<input id="priceUsd" inputmode="numeric"></label>
+      </div>
+      <label>Подпись волны (можно в несколько строк)<textarea id="wave" rows="3"></textarea></label>
+      <label>Текст ссылки под кнопкой<input id="bookText" placeholder="Например, Забронировать место со скидкой"></label>
+      <label>Куда ведёт ссылка<input id="bookUrl" placeholder="https://t.me/..." inputmode="url" autocomplete="off" spellcheck="false"></label>
+      <p class="muted" style="font-size:13px">Если стереть текст ссылки, она пропадёт с сайта.</p>
+    </section>
+
+    <section class="card">
+      <h2>Картинки на сайте</h2>
+      <p class="muted">Нажмите «Заменить», выберите фото и сохраните. «Вернуть» ставит исходную картинку.</p>
+      <div class="list" id="pics"></div>
+      <p class="status" id="st-pics"></p>
+    </section>
+
+    <section class="card">
+      <h2>Отзывы</h2>
+      <p class="muted">Карандаш открывает отзыв: можно поправить имя, текст, дату и заменить или убрать скриншот. Стрелками двигать, крестиком удалить.</p>
+      <div class="list" id="reviews"></div>
+      <p class="status" id="st-rv"></p>
+    </section>
+
+    <section class="card">
+      <h2>Из канала с отзывами</h2>
+      <p class="muted">Новые посты из t.me/codeandcashreviews появляются на сайте сами, примерно через минуту. Если какой-то пост не нужен на сайте, выключите его и сохраните.</p>
+      <div class="list" id="tg"><p class="muted">Загружаю…</p></div>
+    </section>
+
+    <section class="card">
+      <h2>Добавить отзыв</h2>
+      <label>Имя (как в Telegram)<input id="nr-name" placeholder="Например, Вадим"></label>
+      <label>Текст отзыва<textarea id="nr-text" placeholder="Можно оставить пустым, если есть скриншот"></textarea></label>
+      <label>Скриншот (необязательно)<input id="nr-img" type="file" accept="image/*"></label>
+      <div class="row">
+        <label>Дата<input id="nr-date" type="date"></label>
+        <label>Ссылка на пост<input id="nr-link" placeholder="https://t.me/codeandcashreviews/31"></label>
+      </div>
+      <button class="btn btn--ghost" id="nr-add" type="button">Добавить в список</button>
+      <p class="status" id="st-add"></p>
+    </section>
+  </div>
+</main>
+
+<div class="bar" id="bar" hidden><button class="btn btn--white" id="save">Сохранить на сайте</button></div>
+
+<script>
+const $ = s => document.querySelector(s);
+let S = null, pending = [];
+const ls = { get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }, del(k) { try { localStorage.removeItem(k); } catch (e) {} } };
+const saved = ls.get("cc-admin-pass"); if (saved) $("#pass").value = saved;
+$("#nr-date").value = new Date().toISOString().slice(0, 10);
+
+const EMBED = (location.hash === "#embed" || new URLSearchParams(location.search).has("embed")) && window.parent !== window;
+if (EMBED) { $("#close").hidden = false; $("#close").addEventListener("click", () => parent.postMessage({ type: "cc-close" }, location.origin)); }
+const say = (id, text, kind = "") => { const el = $(id); el.textContent = text; el.className = "status " + kind; };
+const pass = () => $("#pass").value.trim();
+
+async function api(action, extra = {}) {
+  let r;
+  try { r = await fetch("api/admin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, password: pass(), ...extra }) }); }
+  catch (e) { throw new Error("нет связи с сайтом. Проверьте интернет. В предпросмотре панель не работает, только на самом сайте"); }
+  let data = {};
+  try { data = await r.json(); } catch (e) {}
+  if (r.status === 404 && !data.error) throw new Error("на сайте нет серверной части. Сайт должен быть на Vercel вместе с папкой api и файлом package.json");
+  if (!r.ok) throw new Error(data.error || "ошибка " + r.status);
+  return data;
+}
+
+async function startData() {
+  try { const r = await fetch("settings.json?v=" + Date.now(), { cache: "no-store" }); if (r.ok) return await r.json(); } catch (e) {}
+  try { return JSON.parse(parent.document.getElementById("cc-default").textContent); } catch (e) {}
+  return { family: {}, reviews: [] };
+}
+
+$("#load").addEventListener("click", async () => {
+  if (!pass()) { say("#st-connect", "Введите пароль.", "err"); return; }
+  const btn = $("#load"); btn.disabled = true;
+  say("#st-connect", "Проверяю…");
+  try {
+    const d = await api("check");
+    S = d.settings || await startData();
+    S.family = S.family || {}; S.reviews = S.reviews || [];
+    pending = [];
+    if ($("#remember").checked) ls.set("cc-admin-pass", pass()); else ls.del("cc-admin-pass");
+    S.hideTg = S.hideTg || [];
+    fill(); $("#editor").hidden = false; $("#bar").hidden = false; $("#logout").hidden = false;
+    loadTg();
+    say("#st-connect", "Вы вошли. Меняйте и жмите «Сохранить на сайте».", "ok");
+  } catch (e) { say("#st-connect", "Не получилось: " + e.message, "err"); }
+  finally { btn.disabled = false; }
+});
+$("#pass").addEventListener("keydown", e => { if (e.key === "Enter") $("#load").click(); });
+$("#logout").addEventListener("click", () => { ls.del("cc-admin-pass"); $("#pass").value = ""; S = null; $("#editor").hidden = true; $("#bar").hidden = true; $("#logout").hidden = true; say("#st-connect", "Пароль удалён с этого устройства."); });
+
+let TGP = null;
+async function loadTg() {
+  try {
+    const r = await fetch("api/reviews");
+    const d = await r.json();
+    TGP = Array.isArray(d.posts) ? d.posts : [];
+  } catch (e) { TGP = null; }
+  drawTg();
+}
+function drawTg() {
+  const box = $("#tg");
+  if (!TGP) { box.innerHTML = `<p class="muted">Не удалось загрузить канал. Попробуйте позже.</p>`; return; }
+  const covered = new Set();
+  S.reviews.forEach(r => { (r.tg || []).forEach(i => covered.add(+i)); const m = /codeandcashreviews\/(\d+)/.exec(r.link || ""); if (m) covered.add(+m[1]); });
+  const list = TGP.filter(p => !covered.has(p.id));
+  box.innerHTML = list.length ? list.map(p => `
+    <label class="switch" style="padding:10px 14px"><span style="min-width:0"><b>${esc(p.name || "Пост " + p.id)}</b><span class="muted" style="display:block;overflow-wrap:anywhere">${esc((p.text || (p.photo ? "Фото" : "")).slice(0, 140))}</span></span><input type="checkbox" data-tg="${p.id}" ${S.hideTg.includes(p.id) ? "" : "checked"}><i></i></label>`).join("") : `<p class="muted">Все посты канала уже есть в списке отзывов выше.</p>`;
+}
+$("#tg").addEventListener("change", e => {
+  const c = e.target.closest("[data-tg]"); if (!c) return;
+  const id = +c.dataset.tg;
+  S.hideTg = S.hideTg.filter(x => x !== id);
+  if (!c.checked) S.hideTg.push(id);
+});
+
+function fill() {
+  S.images = S.images || {};
+  const f = S.family;
+  $("#open").checked = !!f.open; $("#seats").value = f.seats ?? 0; $("#total").value = f.total ?? 0;
+  $("#priceRub").value = f.priceRub ?? ""; $("#priceUsd").value = f.priceUsd ?? ""; $("#wave").value = f.wave ?? ""; $("#bookText").value = f.bookText ?? "Забронировать место со скидкой"; $("#bookUrl").value = f.bookUrl ?? "https://t.me/m/bxwMqnFtMWJh";
+  hint(); EDIT = -1; drawReviews(); drawPics();
+}
+function hint() { $("#open-hint").textContent = $("#open").checked ? "Сейчас на сайте «Вход открыт» и счётчик мест" : "Сейчас на сайте замок и «Вход пока закрыт»"; }
+$("#open").addEventListener("change", hint);
+document.querySelectorAll("[data-step]").forEach(b => b.addEventListener("click", () => { const i = $("#seats"); i.value = Math.max(0, (parseInt(i.value, 10) || 0) + +b.dataset.step); }));
+
+const esc = s => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+function imgSrc(r) { const p = pending.find(x => x.key === r.img); return p ? p.preview : r.img || ""; }
+let EDIT = -1;
+function drawReviews() {
+  const list = S.reviews;
+  $("#reviews").innerHTML = list.length ? list.map((r, i) => `
+    <div class="rv">
+      <div style="display:grid;gap:10px;grid-template-columns:${r.img ? "56px minmax(0,1fr)" : "minmax(0,1fr)"};align-items:start;min-width:0">${r.img ? `<img src="${esc(imgSrc(r))}" alt="">` : ""}<div style="min-width:0"><p><b>${esc(r.name || "")}</b>${r.name ? ": " : ""}${esc(r.text) || "<i>только скриншот</i>"}</p><small>${esc(r.date || "")}</small></div></div>
+      <div class="rv__tools"><button type="button" data-ed="${i}" aria-label="Изменить">✎</button><button type="button" data-mv="${i}" data-d="-1" aria-label="Выше">↑</button><button type="button" data-mv="${i}" data-d="1" aria-label="Ниже">↓</button><button type="button" data-rm="${i}" aria-label="Удалить">✕</button></div>
+      ${EDIT === i ? `<div class="rved">
+        <label>Имя<input data-f="name" value="${esc(r.name || "")}"></label>
+        <label>Текст<textarea data-f="text">${esc(r.text || "")}</textarea></label>
+        <div class="row"><label>Дата<input data-f="date" type="date" value="${esc(r.date || "")}"></label><label>Ссылка на пост<input data-f="link" value="${esc(r.link || "")}"></label></div>
+        <div class="row2"><span class="filebtn">${r.img ? "Заменить скриншот" : "Добавить скриншот"}<input type="file" accept="image/*" data-rimg="${i}"></span>${r.img ? `<button type="button" class="linkbtn" data-rnoimg="${i}">Убрать скриншот</button>` : ""}</div>
+        <button type="button" class="btn btn--ghost" data-eddone>Готово</button>
+      </div>` : ""}
+    </div>`).join("") : `<p class="muted">Отзывов пока нет.</p>`;
+}
+$("#reviews").addEventListener("input", e => {
+  const f = e.target.dataset.f; if (!f || EDIT < 0) return;
+  const r = S.reviews[EDIT], v = e.target.value.trim();
+  if (v) r[f] = v; else if (f === "text") r.text = ""; else delete r[f];
+});
+$("#reviews").addEventListener("change", async e => {
+  const inp = e.target.closest("[data-rimg]"); if (!inp || !inp.files[0]) return;
+  const r = S.reviews[+inp.dataset.rimg];
+  try { const key = await addPending(inp.files[0]); pending = pending.filter(p => p.key !== r.img); r.img = key; drawReviews(); say("#st-rv", "Скриншот заменён. Не забудьте сохранить.", "ok"); }
+  catch (err) { say("#st-rv", err.message, "err"); }
+});
+$("#reviews").addEventListener("click", e => {
+  const ed = e.target.closest("[data-ed]"), done = e.target.closest("[data-eddone]"), noimg = e.target.closest("[data-rnoimg]");
+  const mv = e.target.closest("[data-mv]"), rm = e.target.closest("[data-rm]"), L = S.reviews;
+  if (ed) { const i = +ed.dataset.ed; EDIT = EDIT === i ? -1 : i; drawReviews(); return; }
+  if (done) { EDIT = -1; drawReviews(); return; }
+  if (noimg) { const r = L[+noimg.dataset.rnoimg]; if (!r.text) { say("#st-rv", "Сначала напишите текст отзыва, иначе он будет пустым.", "err"); return; } pending = pending.filter(p => p.key !== r.img); delete r.img; drawReviews(); return; }
+  if (mv) { const i = +mv.dataset.mv, j = i + +mv.dataset.d; if (j >= 0 && j < L.length) { [L[i], L[j]] = [L[j], L[i]]; EDIT = EDIT === i ? j : EDIT === j ? i : EDIT; drawReviews(); } }
+  if (rm) { const i = +rm.dataset.rm; const r = L.splice(i, 1)[0]; EDIT = -1; pending = pending.filter(p => p.key !== r.img); (r.tg || []).forEach(id => { if (!S.hideTg.includes(id)) S.hideTg.push(id); }); drawReviews(); drawTg(); }
+});
+
+const PICS = [["author", "Фото Александра", "assets/alexander.webp"], ["family", "Аватарка C&C Family", "assets/family.webp"], ["marathon", "Фото марафона", "assets/marathon.webp"], ["parser", "Логотип парсера", "assets/parser.webp"], ["script", "Логотип Script C&C", "assets/script.webp"]];
+function picSrc(k, def) { const v = S.images[k]; if (!v) return def; const p = pending.find(x => x.key === v); return p ? p.preview : v; }
+function drawPics() {
+  $("#pics").innerHTML = PICS.map(([k, n, def]) => `<div class="pic"><img src="${esc(picSrc(k, def))}" alt=""><div style="min-width:0"><b>${n}</b><span class="muted">${S.images[k] ? "Своя картинка" : "Исходная"}</span>
+    <div class="row2"><span class="filebtn">Заменить<input type="file" accept="image/*" data-pic="${k}"></span>${S.images[k] ? `<button type="button" class="linkbtn" data-picreset="${k}">Вернуть</button>` : ""}</div></div></div>`).join("");
+}
+$("#pics").addEventListener("change", async e => {
+  const inp = e.target.closest("[data-pic]"); if (!inp || !inp.files[0]) return;
+  try { const k = inp.dataset.pic, key = await addPending(inp.files[0]); pending = pending.filter(p => p.key !== S.images[k]); S.images[k] = key; drawPics(); say("#st-pics", "Картинка выбрана. Не забудьте сохранить.", "ok"); }
+  catch (err) { say("#st-pics", err.message, "err"); }
+});
+$("#pics").addEventListener("click", e => {
+  const b = e.target.closest("[data-picreset]"); if (!b) return;
+  const k = b.dataset.picreset; pending = pending.filter(p => p.key !== S.images[k]); delete S.images[k]; drawPics();
+});
+async function addPending(file) {
+  const preview = await shrink(file);
+  const key = "new-" + Date.now() + "-" + Math.random().toString(36).slice(2, 7);
+  pending.push({ key, preview, b64: preview.split(",")[1] });
+  return key;
+}
+
+function shrink(file) {
+  return new Promise((ok, no) => {
+    const img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, 1400 / Math.max(img.width, img.height));
+      const c = document.createElement("canvas"); c.width = Math.round(img.width * k); c.height = Math.round(img.height * k);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      const url = c.toDataURL("image/jpeg", 0.86); URL.revokeObjectURL(img.src); ok(url);
+    };
+    img.onerror = () => no(new Error("не удалось открыть картинку"));
+    img.src = URL.createObjectURL(file);
+  });
+}
+$("#nr-add").addEventListener("click", async () => {
+  const text = $("#nr-text").value.trim(), file = $("#nr-img").files[0];
+  if (!text && !file) { say("#st-add", "Добавьте текст или скриншот.", "err"); return; }
+  const r = { text, date: $("#nr-date").value || new Date().toISOString().slice(0, 10) };
+  const name = $("#nr-name").value.trim(); if (name) r.name = name;
+  const link = $("#nr-link").value.trim(); if (link) r.link = link;
+  try {
+    if (file) {
+      r.img = await addPending(file);
+    }
+    S.reviews.unshift(r); drawReviews();
+    $("#nr-text").value = ""; $("#nr-img").value = ""; $("#nr-link").value = ""; $("#nr-name").value = "";
+    say("#st-add", "Добавлено в начало списка. Не забудьте сохранить.", "ok");
+  } catch (e) { say("#st-add", e.message, "err"); }
+});
+
+$("#save").addEventListener("click", async () => {
+  const btn = $("#save"), f = S.family;
+  f.open = $("#open").checked; f.seats = Math.max(0, parseInt($("#seats").value, 10) || 0); f.total = Math.max(0, parseInt($("#total").value, 10) || 0);
+  f.priceRub = $("#priceRub").value.trim(); f.priceUsd = $("#priceUsd").value.trim(); f.wave = $("#wave").value.trim(); f.bookText = $("#bookText").value.trim(); f.bookUrl = $("#bookUrl").value.trim();
+  if (f.bookText && !/^https:\/\/\S+$/.test(f.bookUrl)) { say("#st-connect", "Ссылка под кнопкой должна начинаться с https://", "err"); scrollTo({ top: 0, behavior: "smooth" }); return; }
+  btn.disabled = true; btn.textContent = "Сохраняю…";
+  try {
+    for (const p of [...pending]) {
+      const { url } = await api("upload", { data: p.b64 });
+      S.reviews.forEach(r => { if (r.img === p.key) r.img = url; });
+      Object.keys(S.images || {}).forEach(k => { if (S.images[k] === p.key) S.images[k] = url; });
+      pending = pending.filter(x => x !== p);
+    }
+    const d = await api("save", { settings: S });
+    S = d.settings; S.hideTg = S.hideTg || []; S.images = S.images || {}; fill(); drawTg();
+    if (EMBED) parent.postMessage({ type: "cc-saved", settings: JSON.parse(JSON.stringify(S)) }, location.origin);
+    btn.textContent = "Сохранено ✓";
+    say("#st-connect", "Сохранено, на сайте уже видно.", "ok");
+    setTimeout(() => { btn.textContent = "Сохранить на сайте"; }, 2500);
+  } catch (e) {
+    btn.textContent = "Сохранить на сайте";
+    say("#st-connect", "Не сохранилось: " + e.message, "err");
+    scrollTo({ top: 0, behavior: "smooth" });
+  } finally { btn.disabled = false; }
+});
+</script>
+</body>
+</html>
