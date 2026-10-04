@@ -40,7 +40,7 @@ function clean(s) {
   const hideTg = (Array.isArray(s && s.hideTg) ? s.hideTg : []).map(n => parseInt(n, 10)).filter(n => n > 0 && n < 1e7).slice(0, 1000);
   const im = s && typeof s.images === "object" && s.images ? s.images : {};
   const images = {};
-  for (const k of ["author", "family", "marathon", "parser"]) { const v = str(im[k], 400); if (v && okImg(v)) images[k] = v; }
+  for (const k of ["author", "family", "marathon", "parser", "script"]) { const v = str(im[k], 400); if (v && okImg(v)) images[k] = v; }
   return { family, reviews, hideTg, images };
 }
 

@@ -267,7 +267,7 @@ $("#reviews").addEventListener("click", e => {
   if (rm) { const i = +rm.dataset.rm; const r = L.splice(i, 1)[0]; EDIT = -1; pending = pending.filter(p => p.key !== r.img); (r.tg || []).forEach(id => { if (!S.hideTg.includes(id)) S.hideTg.push(id); }); drawReviews(); drawTg(); }
 });
 
-const PICS = [["author", "Фото Александра", "assets/alexander.webp"], ["family", "Аватарка C&C Family", "assets/family.webp"], ["marathon", "Фото марафона", "assets/marathon.webp"], ["parser", "Логотип парсера", "assets/parser.webp"]];
+const PICS = [["author", "Фото Александра", "assets/alexander.webp"], ["family", "Аватарка C&C Family", "assets/family.webp"], ["marathon", "Фото марафона", "assets/marathon.webp"], ["parser", "Логотип парсера", "assets/parser.webp"], ["script", "Логотип Script C&C", "assets/script.webp"]];
 function picSrc(k, def) { const v = S.images[k]; if (!v) return def; const p = pending.find(x => x.key === v); return p ? p.preview : v; }
 function drawPics() {
   $("#pics").innerHTML = PICS.map(([k, n, def]) => `<div class="pic"><img src="${esc(picSrc(k, def))}" alt=""><div style="min-width:0"><b>${n}</b><span class="muted">${S.images[k] ? "Своя картинка" : "Исходная"}</span>
